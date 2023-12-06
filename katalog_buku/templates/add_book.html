@@ -101,24 +101,25 @@
 
 <script>
     const form = document.getElementById('add-book-form');
-    const addButton = document.getElementById('add-book-button');
-
     form.addEventListener('submit', function(event) {
         event.preventDefault();
         const formData = new FormData(this);
-        fetch('/your_add_book_url/', {
+        fetch('/katalog_buku/add_book_ajax/', {
             method: 'POST',
             body: formData
         })
-        .then(response => response.json())
-        .then(data => {
-            // Tindakan selanjutnya setelah menambahkan buku
-            console.log(data);
+        .then(response => {
+            if (response.ok) {
+                window.location.href = '{% url "katalog_buku:show_main" %}';  // Redirect ke halaman utama
+            } else {
+                console.error('Gagal menyimpan buku');
+            }
         })
         .catch(error => {
             console.error('Error:', error);
         });
     });
 </script>
+
 
 {% endblock %}

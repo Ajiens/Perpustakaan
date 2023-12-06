@@ -11,5 +11,5 @@ urlpatterns = [
     path('xml/<int:id>/', show_xml_by_id, name='show_xml_by_id'),
     path('json/<int:id>/', show_json_by_id, name='show_json_by_id'), 
     path('get-book/', get_book_json, name='get_book_json'),
-    path('add-book-ajax/', add_book_ajax, name='add_book_ajax')
+    path('add_book_ajax/', add_book_ajax, name='add_book_ajax')
 ]

@@ -68,9 +68,9 @@ def add_book_ajax(request):
         cover_link = request.POST.get("cover_link")
         author = request.POST.get("author")
         harga = request.POST.get("harga")
-        user = request.user
+       # user = request.user
 
-        new_book = Book(title=title, cover_link=cover_link, author=author, harga=harga, user=user)
+        new_book = Book(title=title, cover_link=cover_link, author=author, harga=harga) #, user=user)
         new_book.save()
 
         return HttpResponse(b"CREATED", status=201)

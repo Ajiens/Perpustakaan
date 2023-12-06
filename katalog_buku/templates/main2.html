@@ -185,6 +185,9 @@
 
 
         bukuList.forEach((buku) => {
+            if (buku.average_rating == null) {
+                buku.average_rating = 0;
+            }
             const htmlString = `
             <div class="overall-card">
                 <div class="card" buku-id="${buku.id}" style="width: 18rem;">
