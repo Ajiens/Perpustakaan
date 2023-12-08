@@ -3,64 +3,81 @@ from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.core import serializers
+from Perpustakaan.pinjam_buku.forms import BorrowForm
 from pinjam_buku.models import Borrow
 from book.models import Book
 from django.views.decorators.csrf import csrf_exempt
 
-def show_borrow(request):
-    user = request.user
-    borrowed_books = Borrow.objects.filter(user=user, return_date__isnull=True)
-    return render(request, 'main_pinjam.html', {'borrowed_books': borrowed_books})
+
+# @login_required(login_url='/login')
+def show_peminjaman(request):
+    form = BorrowForm(request.POST or None)
+
+    dataReady = Book.objects.filter(is_ready = True)
+    dataPinjam = Borrow.objects.filter(user=request.user, is_dikembalikan = False)
+    context = {
+        'dataReady': dataReady,
+        'dataPinjam': dataPinjam,
+        'form' : form,
+        'last_login' : request.COOKIES["last_login"][:-10] if "last_login" in request.COOKIES else "",
+    }
+    return render(request, 'pinjam.html', context)
 
 @csrf_exempt
-def pinjam_buku_ajax(request):
-    print("bencana")
+def pinjam_buku(request):
     if request.method == 'POST':
-        book = get_object_or_404(Book, pk=request.POST.get("bookId"))
-        telephone_number = request.POST.get("telephone_number")
-        email_address = request.POST.get("email_address")
-        duration_days = request.POST.get("duration_days")
+        formData = request.POST
+        name = formData.get('nama')
+        tanggal_akhir = formData.get('tanggal_pengembalian')
+        tanggal_akhir_fix = datetime.strptime(tanggal_akhir, "%Y-%m-%d").date()
+        bookId = formData.get('bookId')
+        bukus = Book.objects.filter(id=bookId)
+        if (bukus.exists):
+            for book in bukus:
+                gambar = book.cover_link
+                book.is_available = False
+                book.save()
 
-        if book.is_available:
-            borrow_date = datetime.date.today()  # Tanggal peminjaman
-            duration_days = int(duration_days)  # Mengubah durasi peminjaman menjadi integer
-            return_date = borrow_date + datetime.timedelta(days=duration_days)  # Menghitung tanggal pengembalian
-            borrow = Borrow(book=book, user=request.user, telephone_number=telephone_number, email_address=email_address, return_date=return_date)
-            borrow.save()
+        user = request.user
 
-            book.is_available = False
-            book.save()
-            return HttpResponse(b"CREATED", status=201)
+        new_peminjaman = Borrow.objects.create(
+            gambarBuku = gambar,
+            user=user, 
+            buku=bukus.first(), 
+            nama=name, 
+            tanggal_pengembalian= tanggal_akhir_fix, 
+            is_dikembalikan = False,
+            title = bukus.first().title
+        )
+        new_peminjaman.save()
+
+        return HttpResponse(b"CREATED", status=201)
     
     return HttpResponseNotFound()
 
 @csrf_exempt
-def kembalikan_buku(request, borrow_id):
+def kembalikan_buku(request, id):
     if request.method == 'POST':
-        buku_dikembalikan = Book.objects.get(pk=id)
-        buku_dikembalikan.is_available= True
-        buku_dikembalikan.save()
-        objekPeminjaman = Borrow.objects.filter(buku=buku_dikembalikan).filter(user=request.user)
+        bukuDikembalikan = Book.objects.get(pk=id)
+        bukuDikembalikan.is_ready = True
+        bukuDikembalikan.save()
+        objekPeminjaman = Borrow.objects.filter(buku=bukuDikembalikan).filter(user=request.user)
         objekPeminjaman.first().delete()
         return HttpResponse(b"DIHAPUS", status = 201)
     return HttpResponseNotFound()    
 
-def pinjam_buku_request(request, id):
-    book = Book.objects.values().get(pk=id)
-    return render(request, 'pinjam_buku.html', {'book':book})
+def get_pinjam_json(request):
+    dataPinjam = Borrow.objects.filter(user=request.user).filter(is_dikembalikan=False)
+    return HttpResponse(serializers.serialize('json', dataPinjam))
 
-def get_buku_json_by_id(request, id):
-    book = Book.objects.values().get(pk=id)
-    return JsonResponse(book, safe=False)
+def get_buku_json(request):
+    dataReady = Book.objects.filter(is_ready = True)
+    return HttpResponse(serializers.serialize('json', dataReady))
 
-def available_books_json(request):
-    available_books = Book.objects.filter(is_available=True)
-    return HttpResponse(serializers.serialize('json', available_books))
+def get_buku_by_id(request, id):
+    bukuDicari = Book.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize('json', bukuDicari))
 
 def get_objek_by_id(request, id):
-    cariPinjaman = Borrow.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize('json', cariPinjaman))
-
-def get_borrowed_buku_json(request):
-    borrowed_books = Borrow.objects.filter(user=request.user, return_date__isnull=True)
-    return HttpResponse(serializers.serialize('json', borrowed_books))
+    pinjamDicari = Borrow.objects.filter(pk=id)
+    return HttpResponse(serializers.serialize('json', pinjamDicari))
