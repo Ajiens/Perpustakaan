@@ -49,6 +49,7 @@ INSTALLED_APPS = [
     'pinjam_buku',
     'add_member',
     'corsheaders',
+    'authentication',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
