@@ -22,8 +22,10 @@ def get_books_json(request):
             'cover_link': book.cover_link,
             'author': book.author,
             'average_rating': book.average_rating,
+            'lama_peminjaman': item.lama_peminjaman,
+            'last_login' : request.COOKIES["last_login"][:-10] if "last_login" in request.COOKIES else "",
         }
-        for book in borrowed_books
+        for book, item in zip(borrowed_books, borrow_items)
     ]
     return JsonResponse(context, safe=False)
 
@@ -57,3 +59,20 @@ def pinjam_buku(request, id):
         success = False
     return JsonResponse({'success': success})
 
+@csrf_exempt
+def pinjam_buku_ajax(request,id):
+    if request.method == 'POST':
+        formData = request.POST
+        lama_peminjaman = formData.get('lama_peminjaman')
+        book = get_object_or_404(Book, pk=id)
+        if book.is_available:
+            book_borrow_exists = Borrow.objects.filter(user=request.user, book=book).exists()
+            if not book_borrow_exists:
+                book_borrow = Borrow(user=request.user, book=book,lama_peminjaman = lama_peminjaman, is_dikembalikan=False)
+                book_borrow.save()
+                book.is_available = False
+                book.save()
+            return HttpResponse(b"CREATED", status=201)
+        else :
+            return HttpResponseNotFound()
+    return HttpResponseNotFound()
