@@ -1,0 +1,250 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<style>
+     body {
+        font-family: Arial, sans-serif;
+        background-color: #f5f5f5;
+        margin: 0;
+        padding: 0;
+    }
+    h1 {
+        font-size: 36px;
+        font-weight: bold;
+    }
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #4d3319;
+        color: white;
+        padding: 20px;
+    }
+
+    .logo {
+        font-size: 24px;
+    }
+
+    .navbar {
+        display: flex;
+        gap: 10px; 
+    }
+
+    .btn-light {
+        background-color: #dda976;
+        color: #4d3319;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-light:hover {
+        background-color: #ffec8b; 
+    }
+
+    #button-wishlist,
+    #button-mybook {
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    h2 {
+        font-size: 2rem; 
+        font-weight: bold; 
+        text-align: center; 
+        margin-bottom: 2rem; 
+        color: #191007; 
+        text-transform: uppercase; 
+        letter-spacing: 1px; 
+    }
+
+    .auth-buttons button {
+        margin-left: 10px;
+        padding: 8px 16px;
+        border: none;
+        cursor: pointer;
+        border-radius: 5px;
+        font-weight: bold;
+        transition: background-color 0.3s ease;
+    }
+
+    .auth-buttons .login-button {
+        background-color: white;
+        color: #010100;
+    }
+
+    .auth-buttons .signup-button {
+        background-color: #191007;
+        color: white;
+    }
+
+
+    #borrow_table {
+        width: 100%;
+        border-collapse: collapse;
+        background-color: #fff;
+        border: 1px solid #ccc;
+        box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        margin-top: 15px;
+    }
+
+    #borrow_table th {
+        background-color: #f5f5f5;
+        font-weight: bold;
+        padding: 10px;
+        text-align: left;
+    }
+
+    #borrow_table td {
+        padding: 10px;
+        text-align: left;
+    }
+
+    #borrow_table tr:nth-child(even) {
+        background-color: #f2f2f2;
+    }
+
+    #borrow_table tr:hover {
+        background-color: #ddd;
+    }
+
+    button.btn-danger {
+        background-color: #ff5757;
+        color: #fff;
+        border: none;
+        padding: 5px 10px;
+        cursor: pointer;
+        font-weight: 600;
+        margin-right: 5px;
+    }
+
+    button.btn-danger:hover {
+        background-color: #ff0000;
+    }
+</style>
+
+
+<header>
+    <div class="header-container">
+        <div class="logo">Purrfect Pages</div>
+        <nav class="navbar">
+            <button id="button-wishlist" type="button" class="btn btn-light">My Wishlist</button>
+            <a href="{% url 'main:logout' %}" class="btn btn-light" style="text-decoration: none; color: #4d3319; padding: 10px 20px; border-radius: 25px; transition: background-color 0.3s ease; font-family: Arial, sans-serif; font-size: 14px;">
+                Logout
+            </a>
+            <a href="{% url 'main:show_pelanggan_page' %}" class="btn btn-light" style="text-decoration: none; color: #4d3319; padding: 10px 20px; border-radius: 25px; transition: background-color 0.3s ease; font-family: Arial, sans-serif; font-size: 14px;">
+                Home
+            </a>
+        </nav>
+    </div>
+</header>
+
+<link href='https://fonts.googleapis.com/css?family=Nunito' rel='stylesheet'>
+    <div class="content-container" style="padding: 15px; padding-left: 20px;">
+        <h1 style ="margin-bottom: 10px;">My Book</h1>
+        <table id="borrow_table" style="border-collapse: collapse; width: 100%;">
+        </table>
+    </div>
+
+    <script>
+        async function getBooks() {
+            return fetch("{% url 'pinjam_buku:get_books_json' %}").then((res) => res.json());
+        }
+
+        async function refreshBooks() {
+            document.getElementById("borrow_table").innerHTML = "";
+            const bukuList = await getBooks();
+
+            const header_row = document.createElement("tr")
+            const title = header_row.insertCell(-1);
+            const author = header_row.insertCell(-1);
+            const rating = header_row.insertCell(-1);
+            const kembalikan = header_row.insertCell(-1);
+
+            title.textContent = "Title";
+            title.width = "550px";
+            author.textContent = "Author";
+            author.width = "350px";
+            rating.textContent = "Rating";
+            rating.width = "100px";
+           
+            header_row.style.fontWeight = "bold";
+            document.getElementById("borrow_table").appendChild(header_row);
+
+
+            bukuList.forEach((item) => {       
+                const bookRow = document.createElement("tr");
+                const titleCell = bookRow.insertCell(-1);
+                const authorCell = bookRow.insertCell(-1);
+                const ratingCell = bookRow.insertCell(-1);
+                const actionCell = bookRow.insertCell(-1);
+
+                const titleImg = document.createElement("img");
+                titleImg.src = item.cover_link;
+                titleImg.style = "width: 100px; height: 150px; margin-right: 10px";
+                titleCell.style = "display: flex; align-items: center; font-weight: 600; max-width: title.width";
+                titleCell.appendChild(titleImg);
+                titleCell.appendChild(document.createTextNode(item.title));
+                titleCell.addEventListener("click", function() {
+                    redirect(item.pk);
+                });
+
+                authorCell.textContent = item.author;
+                authorCell.style = "max-width: 150px; padding-right: 10px"
+
+                ratingCell.style = "flex-direction: row; margin-left: 10px;";
+                const ratingImg = document.createElement("img");
+                ratingImg.src = "https://i.pinimg.com/originals/98/4d/22/984d22fce5cae2c01473f4abe8063fd1.png";
+                ratingImg.style = "height: 15px; margin-bottom: 5px; margin-right: 3px"
+                ratingCell.appendChild(ratingImg);
+                ratingCell.appendChild(document.createTextNode(item.average_rating));
+
+                const kembalikanButton = document.createElement("button");
+                kembalikanButton.className = "btn btn-danger";
+                kembalikanButton.textContent = "kembalikan";
+                kembalikanButton.addEventListener("click", function() {
+                    handlekembalikanBook(item.pk);
+                });
+
+                actionCell.style.textAlign = "center";
+                actionCell.appendChild(kembalikanButton);
+
+                document.getElementById("borrow_table").appendChild(bookRow);
+            });
+        }
+
+        document.addEventListener("DOMContentLoaded", function() {
+            refreshBooks();
+        });
+
+        function handlekembalikanBook(bookId) {
+            fetch(`/pinjam_buku/kembalikan/${bookId}/`)
+            .then(response => response.json())
+            .then(data => {
+                if (data.success) {
+                    refreshBooks();
+
+                } 
+                else {
+                    console.error('Error removing book:', response.statusText);
+                }
+            })
+            .catch(error => {
+                console.error('Error removing book:', error);
+            });
+        }
+
+        function redirect(bookId) {
+            window.location.href = `/deskripsi_buku/deskripsi/${bookId}/`;
+        }
+
+        document.getElementById("button-wishlist").addEventListener("click", function() {
+            window.location.href = `/wishlist`;
+        })
+    </script>
+
+    
+{% endblock content %}

@@ -1,0 +1,101 @@
+{% extends 'base.html' %}
+
+{% block meta %}
+    <title>Login</title>
+    
+{% endblock meta %}
+
+{% block content %}
+<style>
+    #rating-review {
+        position: relative;
+        cursor: pointer;
+        overflow: hidden;
+    }
+
+    #rating-review::before {
+        content: "";
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 100%;
+        height: 2px; /* Tinggi garis bawah */
+        background-color: blue; /* Warna garis bawah */
+        transform: scaleX(0); /* Awalnya tidak terlihat */
+        transform-origin: left;
+        transition: transform 0.3s; /* Animasi lebar garis bawah */
+    }
+
+    #rating-review:hover::before {
+        transform: scaleX(1); /* Lebar garis bawah saat dihover */
+    }
+
+    #rating-review::after {
+        content: "";
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.5); /* Latar belakang gelap */
+        opacity: 0; /* Awalnya tidak terlihat */
+        transition: opacity 0.3s; /* Animasi latar belakang gelap */
+    }
+
+    #rating-review:hover::after {
+        opacity: 1; /* Latar belakang gelap saat dihover */
+    }
+</style>
+
+<header>
+    <div class="header-container">
+        <div class="logo">Purrfect Pages</div>
+        <nav class="navbar">
+            <button id="button-wishlist" type="button" class="btn btn-light">My Wishlist</button>
+            <button id="button-mybook" class="btn btn-light">My Book</button>
+            <a href="{% url 'main:logout' %}" class="btn btn-light" style="text-decoration: none; color: #4d3319; padding: 10px 20px; border-radius: 25px; transition: background-color 0.3s ease; font-family: Arial, sans-serif; font-size: 14px;">
+                Logout
+            </a>
+        </nav>
+    </div>
+</header>
+
+<section class="py-5">
+    <div class="container px-4 px-lg-5 my-5">
+        <div class="row gx-4 gx-lg-5 align-items-center">
+            <div class="col-md-6 sticky-md-top overflow-y-auto">
+                <img class="card-img-top mb-5 mb-md-0" src="{{ book.cover_link }}" alt="..." style="width: 40vh;"/>
+            </div>
+            <div class="col-md-6 overflow-y-auto">
+                <h1 class="display-5 fw-bolder">{{ book.title }}</h1>
+                
+                <div class="fs-4 mb-1">{{ book.author }}</div>
+                <div  class="fs-6 fw-normal"> ISBN : {{book.isbn}}</div>
+                <div  class="fs-6 fw-normal">{{ book.number_of_pages }} halaman</div>
+                <div  class="fs-6 fw-normal"> Dipublikasikan pada {{ book.date_published }} </div>
+                <div class="fs-5 fw-medium" id="rating-review" style="cursor: pointer;">
+                    {% if book.average_rating >= 4 %}
+                        ★★★★☆
+                    {% elif book.average_rating >= 3 %}
+                        ★★★☆☆
+                    {% elif book.average_rating >= 2 %}
+                        ★★☆☆☆
+                    {% elif book.average_rating >= 1 %}
+                        ★☆☆☆☆
+                    {% else %}
+                        No rating available
+                    {% endif %}
+                    {{ book.average_rating }} <span class="fs-6 fw-normal">/ {{ book.rating_count }} ratings • {{book.review_count}} reviews</span>
+                </div>
+                <div class="fs-5 mb-5">
+                    <span class="text-decoration-line-through">$45.00</span>
+                    <span>Rp.{{ book.harga }}</span>
+                </div>
+                <p class="lead">{{ book.description }}</p>
+                
+            </div>
+        </div>
+    </div>
+</section>
+
+{% endblock content %}

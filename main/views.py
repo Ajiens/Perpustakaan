@@ -26,8 +26,10 @@ from book.models import Book
 # Create your views here.
 
 def show_main(request):
-    
-    return render(request, "main.html")
+    return render(request, "landingpage.html")
+
+def show_pelanggan_page(request):
+    return render(request,"main.html")
 
 def register(request):
     form = UserCreationForm()
@@ -50,7 +52,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            response = HttpResponseRedirect(reverse("deskripsi_buku:show_main"))
+            response = HttpResponseRedirect(reverse("main:show_pelanggan_page"))
             return response
         else:
             messages.info(request, 'Sorry, incorrect username or password. Please try again.')
@@ -59,10 +61,9 @@ def login_user(request):
 
 def logout_user(request):
     logout(request)
-    response = HttpResponseRedirect(reverse('main:login'))
+    response = HttpResponseRedirect(reverse('main:show_main'))
     response.delete_cookie('last_login')
     return response
-
 
 def pelanggan_view(request):
     return render(request, 'pelanggan.html')

@@ -13,6 +13,47 @@
         overflow: hidden;
     }
 
+    
+    .header-container {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        background-color: #4d3319;
+        color: white;
+        padding: 20px;
+    }
+
+    .navbar {
+        display: flex;
+        gap: 10px; 
+    }
+
+    .logo {
+            font-size: 24px;
+    }
+    
+    .btn-light {
+        background-color: #dda976;
+        color: #4d3319;
+        border: none;
+        padding: 10px 20px;
+        border-radius: 25px;
+        cursor: pointer;
+        font-weight: bold;
+        text-transform: uppercase;
+        transition: background-color 0.3s ease;
+    }
+
+    .btn-light:hover {
+        background-color: #ffec8b; 
+    }
+
+    #button-wishlist,
+    #button-mybook {
+        font-size: 14px;
+        text-transform: uppercase;
+    }
+    
     #rating-review::before {
         content: "";
         position: absolute;
@@ -47,41 +88,23 @@
     }
 </style>
 
-<nav class="navbar bg-body-tertiary d-flex justify-content-between">
-    <div class="navbar-menu d-flex justify-content-start align-items-center">
-        <div class="navbar-header position-relative d-flex justify-content-start align-items-center gap-3 mt-2 mb-2 me-3">
-            <a class="navbar-header-text text-decoration-none" href="{% url 'main:show_main' %}"><p class="fw-bold my-auto">Carousell PBP</p></a>
-        </div>
-        <div class="d-flex flex-row">
-            <a href="">
-                <button type="button" class="btn btn-light h-100">Data Product</button>
-            </a>
-            <a href="">
-                <button type="button" class="btn btn-light">Add Product</button>
-            </a>
-            <a href="">
-                <button type="button" class="btn btn-light">My Wishlist</button>
-            </a>
-            <a href="">
-                <button type="button" class="btn btn-light">My History</button>
-            </a>
-            
-        </div>
+<header>
+    <div class="header-container">
+        <div class="logo">Purrfect Pages</div>
+            <nav class="navbar">
+                <button id="button-wishlist" type="button" class="btn btn-light">My Wishlist</button>
+                <a href="{% url 'pinjam_buku:daftar_peminjaman' %}" class="btn btn-light" style="text-decoration: none; color: #4d3319; padding: 10px 20px; border-radius: 25px; transition: background-color 0.3s ease; font-family: Arial, sans-serif; font-size: 14px;">
+                    Mybook
+                </a>
+                <a href="{% url 'main:logout' %}" class="btn btn-light" style="text-decoration: none; color: #4d3319; padding: 10px 20px; border-radius: 25px; transition: background-color 0.3s ease; font-family: Arial, sans-serif; font-size: 14px;">
+                    Logout
+                </a>
+                <a href="{% url 'main:show_pelanggan_page' %}" class="btn btn-light" style="text-decoration: none; color: #4d3319; padding: 10px 20px; border-radius: 25px; transition: background-color 0.3s ease; font-family: Arial, sans-serif; font-size: 14px;">
+                    Home
+                </a>
+            </nav>
     </div>
-
-    <div class="">
-        <li class="nav-item dropdown">
-            <button class="btn  dropdown-toggle" data-bs-toggle="dropdown" aria-expanded="false">
-                <span id="navbar-user">Hallo, {{pengunjung.user.username}}</span>
-            </button>
-            <ul class="dropdown-menu">
-                <li class="dropdown-item">Kelas {{class}}</li>
-                <li><a class="dropdown-item" href="">Edit Profile</a></li>
-                <li><a class="dropdown-item" href="{% url 'main:logout' %}">Logout</a></li>
-            </ul>
-        </li>
-    </div>
-</nav>
+</header>
 
 <section class="py-5">
     <div class="container px-4 px-lg-5 my-5">
@@ -89,7 +112,7 @@
             <div class="col-md-6 sticky-md-top overflow-y-auto">
                 <img class="card-img-top mb-5 mb-md-0" src="{{ book.cover_link }}" alt="..." style="width: 40vh;"/>
                 <div class="d-flex gap-3 mt-3">
-                    <button class="btn btn-outline-dark flex-fill" type="button">
+                    <button id= "addToCartBtn"class="btn btn-outline-dark flex-fill" type="button" data-book-id="{{ book.id }}">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
                     </button>
@@ -151,9 +174,34 @@
         });
     });
 
+    document.addEventListener("DOMContentLoaded",function(){
+        const addToCartBtn = document.getElementById("addToCartBtn");
+        addToCartBtn.addEventListener("click",function(){
+            const bookId = addToCartBtn.getAttribute("data-book-id");
+            fetch(`/pinjam_buku/pinjam/${bookId}/`).then(response => response.json()) .then(data => {
+                if (data.success) {
+                    alert("Berhasil Meminjam Buku");
+                } 
+                else {
+                    alert("Buku tidak tersedia atau anda sudah pernah meminjam buku ini");
+                }
+            })
+            .catch(error => {
+                console.error("Error:", error);
+            });
+        })
+    })
     document.getElementById("rating-review").addEventListener("click", function() {
         // Redirect to the desired page when the div is clicked
         window.location.href = 'review/';
         });
+    document.getElementById("button-wishlist").addEventListener("click", function() {
+        window.location.href = `/wishlist`;
+    })
+    document.getElementById("home-button").addEventListener("click", function() {
+        window.location.href = `/katalog_buku`;
+    })
+
+    
 </script>
 {% endblock content %}
