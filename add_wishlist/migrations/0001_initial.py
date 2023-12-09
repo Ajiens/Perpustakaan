@@ -16,16 +16,11 @@ class Migration(migrations.Migration):
 
     operations = [
         migrations.CreateModel(
-            name='Borrow',
+            name='WishlistItem',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('borrow_date', models.DateField(auto_now_add=True)),
-                ('return_date', models.DateField(blank=True, null=True)),
-                ('telephone_number', models.CharField(max_length=20)),
-                ('email_address', models.EmailField(max_length=254)),
-                ('duration_days', models.PositiveIntegerField()),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='book.book')),
                 ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('wished_book', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='book.book')),
             ],
         ),
     ]

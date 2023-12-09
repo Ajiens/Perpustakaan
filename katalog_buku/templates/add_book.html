@@ -72,19 +72,19 @@
             <h1>Add New Book</h1>
             <tr>
                 <td>Title: </td>
-                <td><input type="text" name="title" placeholder="Title" class="form"></td>
+                <td><input id="title" type="text" name="title" placeholder="Title" class="form"></td>
             </tr>
             <tr>
                 <td>Cover Link: </td>
-                <td><input type="text" name="cover_link" placeholder="Link" class="form"></td>
+                <td><input id="cover_link" type="text" name="cover_link" placeholder="Link" class="form"></td>
             </tr>
             <tr>
                 <td>Author: </td>
-                <td><input type="text" name="author" placeholder="Author" class="form"></td>
+                <td><input id="author" type="text" name="author" placeholder="Author" class="form"></td>
             </tr>
             <tr>
                 <td>Harga: </td>
-                <td><input type="text" name="harga" placeholder="Harga" class="form"></td>
+                <td><input id="harga" type="text" name="harga" placeholder="Harga" class="form"></td>
             </tr>
             <tr>
                 <td>
@@ -99,26 +99,63 @@
     </div>
 </div>
 
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>
+
+
 <script>
-    const form = document.getElementById('add-book-form');
-    form.addEventListener('submit', function(event) {
-        event.preventDefault();
-        const formData = new FormData(this);
-        fetch('/katalog_buku/add_book_ajax/', {
-            method: 'POST',
-            body: formData
-        })
-        .then(response => {
-            if (response.ok) {
-                window.location.href = '{% url "katalog_buku:show_main" %}';  // Redirect ke halaman utama
-            } else {
-                console.error('Gagal menyimpan buku');
-            }
-        })
-        .catch(error => {
-            console.error('Error:', error);
-        });
-    });
+    $(document).on('click','#add-book-button', function(e){
+
+        const title = $('#title').val().trim();
+        const cover_link = $('#cover_link').val().trim();
+        const author = $('#author').val().trim();
+        const harga = $('#harga').val().trim();
+
+        if(!Number.isInteger(parseInt(harga, 10))){
+            alert('Harga harus berupa angka');
+        }
+        else if(!title || !cover_link || !author || !harga){
+            alert("Input tidak boleh ada yang kosong");
+        }else{
+            let data = new FormData();
+            data.append('title', title);
+            data.append('cover_link', cover_link);
+            data.append('author', author);
+            data.append('harga', harga);
+
+            $.ajax({
+                type: 'POST',
+                url: '{% url "katalog_buku:add_book_ajax" %}',
+                data: data,
+                cache: false,
+                processData: false,
+                contentType: false,
+                enctype: 'multipart/form-data',
+            });
+            alert("Buku berhasil ditambahkan");
+        }
+
+    })
+
+
+    // const form = document.getElementById('add-book-form');
+    // const addButton = document.getElementById('add-book-button');
+
+    // form.addEventListener('submit', function(event) {
+    //     event.preventDefault();
+    //     const formData = new FormData(this);
+    //     fetch('/your_add_book_url/', {
+    //         method: 'POST',
+    //         body: formData
+    //     })
+    //     .then(response => response.json())
+    //     .then(data => {
+    //         // Tindakan selanjutnya setelah menambahkan buku
+    //         console.log(data);
+    //     })
+    //     .catch(error => {
+    //         console.error('Error:', error);
+    //     });
+    // });
 </script>
 
 

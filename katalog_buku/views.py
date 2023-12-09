@@ -30,12 +30,12 @@ def show_main(request):
 def add_book(request):
     form = BookForm(request.POST or None)
 
-    if form.is_valid() and request.method == "POST":
-        form.save()
-        return HttpResponseRedirect(reverse('katalog_buku:show_main'))
+    # if form.is_valid() and request.method == "POST":
+    #     form.save()
+    #     return HttpResponseRedirect(reverse('katalog_buku:show_main'))
 
-    context = {'form': form}
-    return render(request, "add_book.html", context)
+    # context = {'form': form}
+    return render(request, "add_book.html")
 
 
 def show_xml(request):
@@ -67,10 +67,10 @@ def add_book_ajax(request):
         title = request.POST.get("title")
         cover_link = request.POST.get("cover_link")
         author = request.POST.get("author")
-        harga = request.POST.get("harga")
-       # user = request.user
+        harga = int(request.POST.get("harga"))
 
-        new_book = Book(title=title, cover_link=cover_link, author=author, harga=harga) #, user=user)
+        # Pastikan semua fields Books keisi, jangan sampe null. Karena bisa ngerusak database
+        new_book = Book(title=title, cover_link=cover_link, author=author, harga=harga, rating_count=0, review_count=0, average_rating=0.0, five_star_ratings=0, four_star_ratings=0, three_star_ratings=0,two_star_ratings=0,one_star_ratings=0, number_of_pages=0, date_published="",publisher="",isbn=0,description="")
         new_book.save()
 
         return HttpResponse(b"CREATED", status=201)
