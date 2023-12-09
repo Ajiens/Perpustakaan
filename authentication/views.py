@@ -42,7 +42,7 @@ def login_user(request):
       if user is not None:
           login(request, user) 
           print("BBB")
-          response = HttpResponseRedirect(reverse("Homepage:show_homepage")) 
+          response = HttpResponseRedirect(reverse("main:show_main")) 
           response.set_cookie('last_login', str(datetime.datetime.now())) 
           return response
       else:

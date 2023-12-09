@@ -4,7 +4,6 @@ from django.contrib.auth.models import User
 from katalog_buku.models import Book
 
 class UserProfile(models.Model):
-    
     name = models.CharField(max_length=255)
     role = models.CharField(max_length=100)
     tanggal_lahir = models.CharField(null=True, blank=True, max_length=100)

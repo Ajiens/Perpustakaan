@@ -2,43 +2,78 @@
 
 {% block meta %}
     <title>Login</title>
+    <style>
+        /* Tambahkan gaya CSS Anda di sini */
+        body {
+            background-color: #8B4513;
+            color: #fff;
+            height: 100vh;
+            margin: 0;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .card {
+            width: 70%;
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .card-header {
+            display: flex;
+            justify-content: start;
+            align-items: center;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            background-color: #8B4513;
+            color: #fff;
+            border-radius: 10px 10px 0 0;
+            padding: 1rem;
+        }
+        .card-body {
+            padding: 2rem;
+        }
+        .btn-primary {
+            background-color: #8B4513;
+            color: #fff;
+            width: 100%;
+        }
+        .mt-3 {
+            margin-top: 1rem;
+        }
+    </style>
 {% endblock meta %}
 
 {% block content %}
-
-<div class="container min-vh-100 d-flex justify-content-center align-items-center" style="height: 70%; width: 70%;">
-    <div class="card">
-        <div class="card-header d-flex justify-content-start align-items-center mt-2 mb-2 bg-white">
-            <h5>Carousell PBP</h5>
-        </div>
-        <div class="card-body">
-            <form form method="POST" action="">
-                {% csrf_token %}
-                <div>
-                    <div class="mb-3">
-                      <label class="form-label">Username</label>
-                      <input type="text" name="username" placeholder="Username" class="form-control">
-                    </div>
-                    
-                    <div class="">
-                      <label for="exampleInputPassword1" class="form-label">Password</label>
-                      <input type="password" name="password" placeholder="Password" class="form-control">
-                    
-                    </div>
-                    <div class="">
-                        {% if messages %}
-                            <p class="text-danger">Wrong Password</p>
-                        {% endif %}
-                    </div>
-                    
+<div class="card">
+    <div class="card-header">
+        <h5>Purrfect Pages</h5>
+    </div>
+    <div class="card-body">
+        <form method="POST" action="">
+            {% csrf_token %}
+            <div>
+                <div class="mb-3">
+                    <label class="form-label">Username</label>
+                    <input type="text" name="username" placeholder="Username" class="form-control">
                 </div>
-                <button type="submit" class="btn btn-primary mt-3" style="width: 100%;">Login</button>
-            </form>
-            <div class="mt-3">          
-                Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
+                
+                <div class="mb-3">
+                    <label for="exampleInputPassword1" class="form-label">Password</label>
+                    <input type="password" name="password" placeholder="Password" class="form-control">
+                </div>
+                
+                <div class="mb-3">
+                    {% if messages %}
+                        <p class="text-danger">Wrong Password</p>
+                    {% endif %}
+                </div>
             </div>
+            <button type="submit" class="btn btn-primary mt-3">Login</button>
+        </form>
+        <div class="mt-3">          
+            Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
         </div>
     </div>
 </div>
-
 {% endblock content %}
