@@ -52,7 +52,7 @@ def login_user(request):
         user = authenticate(request, username=username, password=password)
         if user is not None:
             login(request, user)
-            response = HttpResponseRedirect(reverse("main:show_pelanggan_page"))
+            response = HttpResponseRedirect(reverse("katalog_buku:show_main"))
             return response
         else:
             messages.info(request, 'Sorry, incorrect username or password. Please try again.')

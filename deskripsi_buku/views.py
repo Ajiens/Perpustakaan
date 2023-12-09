@@ -108,6 +108,8 @@ def add_review_buku(request):
         else:
             messages.error(request, 'Rating tidak boleh lebih dari 5.')
 
+        if (len(komentar) != 0):
+            book.review_count += 1
         new_rating = ((book.average_rating * book.rating_count) + int(rating)) / (book.rating_count + 1)
         book.average_rating = round(new_rating, 2)
         book.rating_count += 1
@@ -116,9 +118,9 @@ def add_review_buku(request):
         new_review = Review(book=book, user=user, rating_user=rating, komentar=komentar)
         new_review.save()
 
-        return messages.success(request, 'Review berhasil ditambahkan')
-
-    return JsonResponse({"message": "Metode HTTP tidak valid"}, status=405)
+        return HttpResponse('Review berhasil ditambahkan', status=201)
+    else:
+        return HttpResponseForbidden()
 
 
 def get_review(request):

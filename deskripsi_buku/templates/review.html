@@ -149,13 +149,15 @@
 
 
     function getRatingStars(rating_user) {
-        if (rating_user >= 4) {
+        if (rating_user == 5) {
+            return "★★★★★";
+        } else if (rating_user == 4) {
             return "★★★★☆";
-        } else if (rating_user >= 3) {
+        } else if (rating_user == 3) {
             return "★★★☆☆";
-        } else if (rating_user >= 2) {
+        } else if (rating_user == 2) {
             return "★★☆☆☆";
-        } else if (rating_user >= 1) {
+        } else if (rating_user == 1) {
             return "★☆☆☆☆";
         } else {
             return "No rating available";
