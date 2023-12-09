@@ -24,6 +24,10 @@ def deskripsi_buku(request, id):
     book = Book.objects.values().get(pk=id)
     return render(request, 'deskripsi.html', {'book':book})
 
+def deskripsi_buku_landingpage(request,id):
+    book = Book.objects.values().get(pk=id)
+    return render(request, 'deskripsi_landingpage.html', {'book':book})
+
 def review_buku(request, id):
     book = Book.objects.values().get(pk=id)
     review = Review.objects.values().all()

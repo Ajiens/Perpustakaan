@@ -125,36 +125,74 @@
 </head>
 
 <body>
-    <h2>Daftar Pinjaman Buku</h2> 
+    <header>
+        <div class="header-container">
+            <div class="logo">Purrfect Pages</div>
+            <div class="auth-buttons">
+                <button id = "btn-login" class="login-button">Login</button>
+                <button id = "btn-register" class="signup-button">Sign Up</button>
+            </div>
+        </div>
+    </header>
+
+    <h2>Daftar Katalog Buku</h2> 
 
     <div id="product_content" class="all-product d-flex flex-wrap align-content-start gap-4">
     </div>
-
-
-<script>
-    async function getBukuDipinjam(userId) {
-        return fetch(`/pinjam_buku/get_borrowed_buku_json/?user_id=${userId}`).then((res) => res.json());
-    }
     
-    async function refreshBukuDipinjam(userId) {
-        document.getElementById("product_content").innerHTML = "";
-        const bukuDipinjamList = await getBukuDipinjam(userId);  // Mengambil daftar buku yang dipinjam dari server
-        console.log(bukuDipinjamList);
+    <script>
+        async function getBuku(){
+            return fetch("{% url 'deskripsi_buku:get_buku_json' %}").then((res) => res.json())
+        }
+    
+        async function refreshBuku() {
+            document.getElementById("product_content").innerHTML = "";
+            const bukuList = await getBuku();  // Mengambil daftar buku dari server
+            console.log(bukuList);
+    
+    
+            bukuList.forEach((buku) => {
+                const htmlString = `
+                    <div class="card" buku-id="${buku.id}" style="width: 18rem;">
+                        <img src="${buku.cover_link}" class="card-img-top" alt="">
+                        <div class="card-body">
+                            <h5 class="card-title">${buku.title}</h5>
+                            <p class="card-author">${buku.author}</p>
+                            <div class="rating-stars">
+                                <p class="card-rating">${buku.average_rating}</p>
+                            </div>
+                        </div>
+                    </div>`;
+    
+                document.getElementById("product_content").innerHTML += htmlString;
+            });
+        }
+    
+        async function deskripsiProduct(){
+            const cardKatalogs = document.querySelectorAll('.card');
+            cardKatalogs.forEach((card) => {
+                card.addEventListener('click', function () {
+                    const bukuID = this.getAttribute('buku-id');
+                    console.log(bukuID); // Use console.log instead of print
+                    window.location.href = `/deskripsi_buku/deskripsi_landingpage/${bukuID}/`;
+                });
+            });
+        }
+        // window.onload = deskripsiProduct;
+    
+        document.getElementById("product_content").onclick = deskripsiProduct
+        
+        document.getElementById("btn-login").addEventListener("click", function() {
+            window.location.href = "{% url 'main:login' %}";
+        })
 
-        bukuDipinjamList.forEach((buku) => {
-            const htmlString = `
-                <div class="card" buku-id="${buku.id}" style="width: 18rem;">
-                    <img src="${buku.cover_link}" class="card-img-top" alt="">
-                    <div class="card-body">
-                        <h5 class="card-title">${buku.title}</h5>
-                        <p class="card-author">${buku.author}</p>
-                        <p class="card-text">Tanggal Meminjam: ${buku.borrow_date}</p>
-                        <p class="card-text">Batas Pengembalian: ${buku.return_date}</p>
-                    </div>
-                </div>`;
+        document.getElementById("btn-register").addEventListener("click", function() {
+            window.location.href = "{% url 'main:register' %}";
+        })
 
-            document.getElementById("product_content").innerHTML += htmlString;
-        });
-    }
-
+    
+    refreshBuku();
+    
 </script>
+</html>
+{% endblock content %}

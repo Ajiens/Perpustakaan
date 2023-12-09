@@ -8,59 +8,52 @@ from book.models import Book
 from django.views.decorators.csrf import csrf_exempt
 
 def show_borrow(request):
+    borrowed_books = Borrow.objects.filter(user=request.user)
+    all_borrowed_books = [item.book for item in borrowed_books]
+    return render(request, 'peminjaman.html', {'borrowed_books': all_borrowed_books})
+
+def get_books_json(request):
+    borrow_items = Borrow.objects.filter(user=request.user)
+    borrowed_books = [item.book for item in borrow_items]
+    context = [
+        {
+            'pk': book.pk,
+            'title': book.title,
+            'cover_link': book.cover_link,
+            'author': book.author,
+            'average_rating': book.average_rating,
+        }
+        for book in borrowed_books
+    ]
+    return JsonResponse(context, safe=False)
+
+
+def kembalikan_buku(request, id):
     user = request.user
-    borrowed_books = Borrow.objects.filter(user=user, return_date__isnull=True)
-    return render(request, 'main_pinjam.html', {'borrowed_books': borrowed_books})
+    book = get_object_or_404(Book, pk=id)
+    borrowed_item = Borrow.objects.get(user=user, book=book, is_dikembalikan=False)
+    borrowed_item.is_dikembalikan = True
+    borrowed_item.delete()
+    book.is_available = True
+    book.save()
+    success = True
 
-@csrf_exempt
-def pinjam_buku_ajax(request):
-    print("bencana")
-    if request.method == 'POST':
-        book = get_object_or_404(Book, pk=request.POST.get("bookId"))
-        telephone_number = request.POST.get("telephone_number")
-        email_address = request.POST.get("email_address")
-        duration_days = request.POST.get("duration_days")
+    return JsonResponse({'success': success})
 
-        if book.is_available:
-            borrow_date = datetime.date.today()  # Tanggal peminjaman
-            duration_days = int(duration_days)  # Mengubah durasi peminjaman menjadi integer
-            return_date = borrow_date + datetime.timedelta(days=duration_days)  # Menghitung tanggal pengembalian
-            borrow = Borrow(book=book, user=request.user, telephone_number=telephone_number, email_address=email_address, return_date=return_date)
-            borrow.save()
-
+def pinjam_buku(request, id):
+    user = request.user
+    book = get_object_or_404(Book, pk=id)
+    if book.is_available:
+        book_borrow_exists = Borrow.objects.filter(user=user, book=book).exists()
+        if not book_borrow_exists:
+            book_borrow = Borrow(user=user, book=book, is_dikembalikan=False)
+            book_borrow.save()
             book.is_available = False
             book.save()
-            return HttpResponse(b"CREATED", status=201)
-    
-    return HttpResponseNotFound()
+            success = True
+        else:
+            success = False
+    else:
+        success = False
+    return JsonResponse({'success': success})
 
-@csrf_exempt
-def kembalikan_buku(request, borrow_id):
-    if request.method == 'POST':
-        buku_dikembalikan = Book.objects.get(pk=id)
-        buku_dikembalikan.is_available= True
-        buku_dikembalikan.save()
-        objekPeminjaman = Borrow.objects.filter(buku=buku_dikembalikan).filter(user=request.user)
-        objekPeminjaman.first().delete()
-        return HttpResponse(b"DIHAPUS", status = 201)
-    return HttpResponseNotFound()    
-
-def pinjam_buku_request(request, id):
-    book = Book.objects.values().get(pk=id)
-    return render(request, 'pinjam_buku.html', {'book':book})
-
-def get_buku_json_by_id(request, id):
-    book = Book.objects.values().get(pk=id)
-    return JsonResponse(book, safe=False)
-
-def available_books_json(request):
-    available_books = Book.objects.filter(is_available=True)
-    return HttpResponse(serializers.serialize('json', available_books))
-
-def get_objek_by_id(request, id):
-    cariPinjaman = Borrow.objects.filter(pk=id)
-    return HttpResponse(serializers.serialize('json', cariPinjaman))
-
-def get_borrowed_buku_json(request):
-    borrowed_books = Borrow.objects.filter(user=request.user, return_date__isnull=True)
-    return HttpResponse(serializers.serialize('json', borrowed_books))
