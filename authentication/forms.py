@@ -3,7 +3,7 @@ from django.contrib.auth.forms import UserCreationForm
 
 class CustomUserCreationForm(UserCreationForm):
     ROLE_CHOICES = (
-        ('Pelanggan', 'Pelanggan'),
+       ('Pelanggan', 'Pelanggan'),
         ('Karyawan', 'Karyawan'),
     )
 
@@ -11,4 +11,3 @@ class CustomUserCreationForm(UserCreationForm):
         choices=ROLE_CHOICES,
         widget=forms.RadioSelect
     )
-    
