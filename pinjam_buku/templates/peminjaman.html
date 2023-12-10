@@ -2,7 +2,7 @@
 
 {% block content %}
 <style>
-     body {
+    body {
         font-family: Arial, sans-serif;
         background-color: #f5f5f5;
         margin: 0;
@@ -162,7 +162,9 @@
             const title = header_row.insertCell(-1);
             const author = header_row.insertCell(-1);
             const rating = header_row.insertCell(-1);
+            const pinjam = header_row.insertCell(-1);
             const kembalikan = header_row.insertCell(-1);
+            
 
             title.textContent = "Title";
             title.width = "550px";
@@ -170,6 +172,8 @@
             author.width = "350px";
             rating.textContent = "Rating";
             rating.width = "100px";
+            pinjam.textContent = "Lama Peminjaman";
+            pinjam.width = "400px";
            
             header_row.style.fontWeight = "bold";
             document.getElementById("borrow_table").appendChild(header_row);
@@ -180,8 +184,9 @@
                 const titleCell = bookRow.insertCell(-1);
                 const authorCell = bookRow.insertCell(-1);
                 const ratingCell = bookRow.insertCell(-1);
+                const pinjamCell = bookRow.insertCell(-1);
                 const actionCell = bookRow.insertCell(-1);
-
+      
                 const titleImg = document.createElement("img");
                 titleImg.src = item.cover_link;
                 titleImg.style = "width: 100px; height: 150px; margin-right: 10px";
@@ -202,6 +207,9 @@
                 ratingCell.appendChild(ratingImg);
                 ratingCell.appendChild(document.createTextNode(item.average_rating));
 
+                pinjamCell.textContent = `${item.lama_peminjaman} hari`; 
+                pinjamCell.style = "max-width: 150px; padding-right: 10px"
+
                 const kembalikanButton = document.createElement("button");
                 kembalikanButton.className = "btn btn-danger";
                 kembalikanButton.textContent = "kembalikan";
@@ -209,6 +217,7 @@
                     handlekembalikanBook(item.pk);
                 });
 
+        
                 actionCell.style.textAlign = "center";
                 actionCell.appendChild(kembalikanButton);
 
