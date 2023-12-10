@@ -12,8 +12,6 @@
         cursor: pointer;
         overflow: hidden;
     }
-
-    
     .header-container {
         display: flex;
         justify-content: space-between;
@@ -106,16 +104,44 @@
     </div>
 </header>
 
-<section class="py-5">
+<div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Pinjam Buku</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="pinjamForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="lama_peminjaman" class="col-form-label">Lama Peminjaman (hari):</label>
+                        <input type="number" class="form-control" id="lama_peminjaman" name="lama_peminjaman">
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button onclick="pinjamBuku()" type="button" class="btn btn-primary" data-bs-dismiss="modal">Pinjam Buku</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+<!-- Tombol "Add Product by AJAX" yang dipindahkan ke dalam modal -->
+
+<section
+ class="py-5">
     <div class="container px-4 px-lg-5 my-5">
         <div class="row gx-4 gx-lg-5 align-items-center">
             <div class="col-md-6 sticky-md-top overflow-y-auto">
                 <img class="card-img-top mb-5 mb-md-0" src="{{ book.cover_link }}" alt="..." style="width: 40vh;"/>
                 <div class="d-flex gap-3 mt-3">
-                    <button id= "addToCartBtn"class="btn btn-outline-dark flex-fill" type="button" data-book-id="{{ book.id }}">
+                    <!-- <button id= "addToCartBtn"class="btn btn-outline-dark flex-fill" type="button" data-book-id="{{ book.id }}">
                         <i class="bi-cart-fill me-1"></i>
                         Add to cart
-                    </button>
+                    </button> -->
+                    <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-book-id="{{ book.id }}">Add To Cart</button>
                     <button id="addToWishlistBtn" class="btn btn-outline-dark flex-fill" type="button" data-book-id="{{ book.id }}">
                         <i class="bi-cart-fill me-1"></i>
                         Add to Wishlist
@@ -155,6 +181,28 @@
 </section>
 
 <script>
+    function pinjamBuku() {
+        const formData = new FormData(document.getElementById('pinjamForm'));
+        const lamaPeminjaman = formData.get('lama_peminjaman');
+        const bookId = addToWishlistBtn.getAttribute("data-book-id");
+
+        fetch(`/pinjam_buku/pinjam_buku_ajax/${bookId}/`, {
+            method: "POST",
+            body: formData
+        }).then(response => {
+            if (response.status === 201) {
+                alert('Buku berhasil dipinjam!');
+            } else {
+                alert('Gagal meminjam buku.');
+            }
+        })
+        .catch(error => {
+            console.error('Error:', error);
+            
+        });
+        document.getElementById("form").reset()
+    }
+
     document.addEventListener("DOMContentLoaded", function () {
         const addToWishlistBtn = document.getElementById("addToWishlistBtn");
         addToWishlistBtn.addEventListener("click", function () {
@@ -174,23 +222,23 @@
         });
     });
 
-    document.addEventListener("DOMContentLoaded",function(){
-        const addToCartBtn = document.getElementById("addToCartBtn");
-        addToCartBtn.addEventListener("click",function(){
-            const bookId = addToCartBtn.getAttribute("data-book-id");
-            fetch(`/pinjam_buku/pinjam/${bookId}/`).then(response => response.json()) .then(data => {
-                if (data.success) {
-                    alert("Berhasil Meminjam Buku");
-                } 
-                else {
-                    alert("Buku tidak tersedia atau anda sudah pernah meminjam buku ini");
-                }
-            })
-            .catch(error => {
-                console.error("Error:", error);
-            });
-        })
-    })
+    // document.addEventListener("DOMContentLoaded",function(){
+    //     const addToCartBtn = document.getElementById("addToCartBtn");
+    //     addToCartBtn.addEventListener("click",function(){
+    //         const bookId = addToCartBtn.getAttribute("data-book-id");
+    //         fetch(`/pinjam_buku/pinjam/${bookId}/`).then(response => response.json()) .then(data => {
+    //             if (data.success) {
+    //                 alert("Berhasil Meminjam Buku");
+    //             } 
+    //             else {
+    //                 alert("Buku tidak tersedia atau anda sudah pernah meminjam buku ini");
+    //             }
+    //         })
+    //         .catch(error => {
+    //             console.error("Error:", error);
+    //         });
+    //     })
+    // })
     document.getElementById("rating-review").addEventListener("click", function() {
         // Redirect to the desired page when the div is clicked
         window.location.href = 'review/';

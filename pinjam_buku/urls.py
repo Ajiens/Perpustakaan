@@ -9,4 +9,5 @@ urlpatterns =[
     path('pinjam/<int:id>/', pinjam_buku, name='pinjam_buku'),
     path('get-books/', get_books_json, name='get_books_json'),
     path("kembalikan/<int:id>/", kembalikan_buku, name="kembalikan_buku"),
+    path('pinjam_buku_ajax/<int:id>/', pinjam_buku_ajax, name='pinjam_buku_ajax'),
 ]

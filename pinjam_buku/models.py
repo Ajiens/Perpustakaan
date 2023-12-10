@@ -1,3 +1,4 @@
+from datetime import timezone
 from django.db import models
 from django.contrib.auth.models import User
 from book.models import Book
@@ -7,3 +8,4 @@ class Borrow(models.Model):
     book = models.ForeignKey(Book, on_delete=models.CASCADE)
     user = models.ForeignKey(User,on_delete=models.CASCADE)
     is_dikembalikan = models.BooleanField(default=False)
+    lama_peminjaman = models.IntegerField(default=1)
