@@ -20,6 +20,7 @@ from add_wishlist.views import *
 
 urlpatterns = [
     path('', include("main.urls")),
+    path('auth/', include('authentication.urls')),
     path('katalog_buku/', include('katalog_buku.urls')),
     path('admin/', admin.site.urls),
     path("api/books/", include("book.urls")),
