@@ -11,3 +11,4 @@ class CustomUserCreationForm(UserCreationForm):
         choices=ROLE_CHOICES,
         widget=forms.RadioSelect
     )
+    
