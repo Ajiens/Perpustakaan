@@ -1,3 +1,4 @@
+import json
 from django.shortcuts import render
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.core import serializers
@@ -5,6 +6,7 @@ from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
+from django.http import JsonResponse
 
 from book.models import Book
 from deskripsi_buku.models import Review
@@ -37,17 +39,21 @@ def review_buku(request, id):
     }
     return render(request, 'review.html', context)
 
-from django.http import JsonResponse
-
 @csrf_exempt
 def add_review_flutter(request):
     if request.method == 'POST':
-        komentar = request.POST.get("komentar")
-        rating = request.POST.get("rating")
+        # Ambil data JSON dari body request
+        data = json.loads(request.body)
+
+        # Dapatkan nilai rating dan komentar dari data JSON
+        rating = data.get('rating')
+        komentar = data.get('komentar')
+
+        
         if (int(rating) > 5):
             return JsonResponse({"status": "error"}, status=401)
         user = request.user
-        buku_id = int(request.POST.get("buku_id"))
+        buku_id = int(data.get("buku_id"))
 
         try:
             book = Book.objects.get(pk=buku_id)
