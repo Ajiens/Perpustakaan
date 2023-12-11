@@ -37,21 +37,6 @@
         font-weight: bold;
     }
 
-    .btn-navbar {
-        background-color: rgb(242, 81, 137);
-        color: white;
-        font-weight: bold;
-        text-align: center;
-        text-decoration: none;
-        display: block;
-        width: 100%; 
-        padding: 0.5rem;
-        border-radius: 5px;
-        cursor: pointer;
-        transition: background-color 0.2s;
-        margin-top: auto; 
-    }
-
     /* CSS untuk katalog buku */
     #product_content {
         display: flex;
@@ -127,7 +112,6 @@
         align-items: center;
         justify-content: flex-end;
         margin-top: auto;
-        /* margin-bottom: 5px; */
     }
 
     .card-rating {
@@ -168,18 +152,9 @@
         margin-bottom: 17px;
         margin-right: 2px;
     }
-
-    .logout-button {
-        background-color: rgb(253, 100, 125);
-        color: white;
-        border: none;
-        font-size: 12px;
-        padding: 5px 10px;
-        cursor: pointer;
-        font-weight: bold;
-        border-radius: 10px;
-        transition: background-color 0.3s ease;
-
+    p {
+        text-decoration: underline;
+        margin-right: 15px;
     }
 
     
@@ -188,11 +163,9 @@
 <div id="navbar" class="navbar">
     <a href="#" class="navbar-brand">Purrfect Pages</a>
     <ul class="navbar-links">
-        <li><a href="#">History</a></li>
-        <li><a href="#">My Wishlist</a></li>
-        <div class="btn-logout">
-            <div class="logout-button">Logout</div>
-        </div>
+        <li><a href="#">Home</a></li>
+        <li><a href="#">About</a></li>
+        <li><a href="#">Contact</a></li>
     </ul>
 </div>
 
@@ -200,10 +173,6 @@
 </div>
 
 <script>
-    document.getElementById("button-wishlist").addEventListener("click", function() {
-    window.location.href = `/wishlist`;
-    })
-
     async function getBuku(){
         return fetch("{% url 'deskripsi_buku:get_buku_json' %}").then((res) => res.json())
     }
@@ -228,7 +197,7 @@
                                 <p class="card-rating">${buku.average_rating}</p>
                             </div>
                         </div>
-                        <a href="#" class="btn btn-primary pinjam-button" data-id="${buku.id}" style="width: 100%;">Pinjam Sekarang</a>
+                        <a href="#" class="btn btn-primary deskripsi-button" data-id="${buku.id}" style="width: 100%;">Lihat Deskripsi</a>
                     </div>
                 </div>
             </div>`;
@@ -261,21 +230,8 @@
     }
 
     document.addEventListener("click", function(event) {
-        if (event.target.classList.contains("pinjam-button")) {
+        if (event.target.classList.contains("deskripsi-button")) {
             navigateToDeskripsi(event);
-        }
-    });
-
-
-    function navigateToLandingPage(event) {
-        event.preventDefault();
-        const bukuID = event.target.getAttribute("data-id");
-        window.location.href = `/localhost/logout/`;
-    }
-
-    document.addEventListener("click", function(event) {
-        if (event.target.classList.contains("logout-button")) {
-            navigateToLandingPage(event);
         }
     });
 </script>

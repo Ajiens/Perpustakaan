@@ -123,18 +123,31 @@
             data.append('harga', harga);
 
             $.ajax({
-                type: 'POST',
-                url: '{% url "katalog_buku:add_book_ajax" %}',
-                data: data,
-                cache: false,
-                processData: false,
-                contentType: false,
-                enctype: 'multipart/form-data',
-            });
-            alert("Buku berhasil ditambahkan");
-        }
-
-    })
+            type: 'POST',
+            url: '{% url "katalog_buku:add_book_ajax" %}',
+            data: data,
+            cache: false,
+            processData: false,
+            contentType: false,
+            enctype: 'multipart/form-data',
+            success: function () {
+                // This is called when the request is successful
+                alert("Buku berhasil ditambahkan");
+            },
+            error: function (xhr, status, error) {
+                // This is called when the request encounters an error
+                if(xhr.status === 201){
+                    alert("Buku berhasil ditambahkan");
+                }
+                else if (xhr.status === 401) {
+                    alert("Unauthorized: You do not have permission to add a book");
+                } else {
+                    alert("An error occurred while adding the book");
+                }
+            }
+        });
+    }
+});
 
 
     // const form = document.getElementById('add-book-form');

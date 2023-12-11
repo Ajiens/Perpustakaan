@@ -10,19 +10,17 @@ class Migration(migrations.Migration):
     initial = True
 
     dependencies = [
-        ('book', '0001_initial'),
         migrations.swappable_dependency(settings.AUTH_USER_MODEL),
     ]
 
     operations = [
         migrations.CreateModel(
-            name='Borrow',
+            name='UserWithRole',
             fields=[
                 ('id', models.BigAutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('is_dikembalikan', models.BooleanField(default=False)),
-                ('lama_peminjaman', models.IntegerField(default=1)),
-                ('book', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to='book.book')),
-                ('user', models.ForeignKey(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
+                ('name', models.CharField(max_length=255)),
+                ('role', models.CharField(choices=[('Pelanggan', 'Pelanggan'), ('Karyawan', 'Karyawan')], max_length=10)),
+                ('user', models.OneToOneField(on_delete=django.db.models.deletion.CASCADE, to=settings.AUTH_USER_MODEL)),
             ],
         ),
     ]

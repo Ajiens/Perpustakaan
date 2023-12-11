@@ -48,6 +48,7 @@ INSTALLED_APPS = [
     'katalog_buku',
     'pinjam_buku',
     'add_member',
+    'authentication',
     'corsheaders',
 ]
 

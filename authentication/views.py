@@ -15,12 +15,14 @@ def login(request):
         if user.is_active:
             auth_login(request, user)
             # Status login sukses.
-            return JsonResponse({
+            response = JsonResponse({
                 "username": user.username,
                 "status": True,
                 "message": "Login sukses!"
                 # Tambahkan data lainnya jika ingin mengirim data ke Flutter.
             }, status=200)
+            response.set_cookie('user', user.id)
+            return response
         else:
             return JsonResponse({
                 "status": False,
@@ -39,11 +41,13 @@ def logout(request):
 
     try:
         auth_logout(request)
-        return JsonResponse({
+        response = JsonResponse({
             "username": username,
             "status": True,
             "message": "Logout berhasil!"
         }, status=200)
+        response.delete_cookie('user')
+        return response
     except:
         return JsonResponse({
         "status": False,

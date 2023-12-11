@@ -21,6 +21,7 @@ from django.contrib.auth.decorators import login_required
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.core import serializers
 from book.models import Book
+from authentication.models import UserWithRole
 
 
 # Create your views here.
@@ -38,6 +39,8 @@ def register(request):
         form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
+            profile = UserWithRole(user=user, name=user.username, role="Pelanggan")
+            profile.save()
             # pengunjung = Pengunjung(pengunjung=user, is_member=False) # TODO Definisikan pengunjung sesuai modelsnya
             # pengunjung.save() #Simpan pengunjung
             messages.success(request, 'Your account has been successfully created!')
@@ -51,9 +54,18 @@ def login_user(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            login(request, user)
-            response = HttpResponseRedirect(reverse("katalog_buku:show_main"))
-            return response
+            print(user)
+            role_user = UserWithRole.objects.get(user=user)
+            if (role_user.role == "Karyawan"):
+                print("Karyawan")
+                response = HttpResponseRedirect(reverse("katalog_buku:show_main_karyawan"))
+                response.set_cookie('user', user.id)
+                return response
+            else:
+                print("Pelanggan")
+                response = HttpResponseRedirect(reverse("katalog_buku:show_main"))
+                response.set_cookie('user', user.id)
+                return response
         else:
             messages.info(request, 'Sorry, incorrect username or password. Please try again.')
     context = {}
@@ -62,7 +74,7 @@ def login_user(request):
 def logout_user(request):
     logout(request)
     response = HttpResponseRedirect(reverse('main:show_main'))
-    response.delete_cookie('last_login')
+    response.delete_cookie('user')
     return response
 
 def pelanggan_view(request):
