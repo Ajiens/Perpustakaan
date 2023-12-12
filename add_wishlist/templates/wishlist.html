@@ -44,16 +44,19 @@
             const author = header_row.insertCell(-1);
             const rating = header_row.insertCell(-1);
             const price = header_row.insertCell(-1);
+            const keterangan = header_row.insertCell(-1);
             const remove = header_row.insertCell(-1);
 
             title.textContent = "Title";
-            title.width = "550px";
+            title.width = "500px";
             author.textContent = "Author";
-            author.width = "350px";
+            author.width = "300px";
             rating.textContent = "Rating";
             rating.width = "100px";
             price.textContent = "Price";
             price.width = "100px";
+            keterangan.textContent = "Keterangan";
+            keterangan.width = "100px";
 
             header_row.style.fontWeight = "bold";
             document.getElementById("wishlist_table").appendChild(header_row);
@@ -65,6 +68,7 @@
                 const authorCell = bookRow.insertCell(-1);
                 const ratingCell = bookRow.insertCell(-1);
                 const priceCell = bookRow.insertCell(-1);
+                const keteranganCell = bookRow.insertCell(-1);
                 const actionCell = bookRow.insertCell(-1);
 
                 const titleImg = document.createElement("img");
@@ -89,6 +93,9 @@
 
                 priceCell.textContent = `Rp.${item.harga}`;
                 priceCell.style = "max-width: 50px"
+
+                keteranganCell.textContent = `${item.keterangan}`;
+                keterangan.style = "max-width: 50px"
 
                 const removeButton = document.createElement("button");
                 removeButton.className = "btn btn-danger";

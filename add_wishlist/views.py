@@ -10,10 +10,11 @@ from add_wishlist.models import WishlistItem
 def add_to_wishlist(request, book_id):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
     user = User.objects.get(username=user_id)
+    keterangan = request.POST.get('keterangan')
     
     book = get_object_or_404(Book, pk=book_id)
 
-    wishlist = WishlistItem(user=user, wished_book=book)
+    wishlist = WishlistItem(user=user, wished_book=book, keterangan=keterangan)
     wishlist_item_exists = WishlistItem.objects.filter(user=user, wished_book=book).exists()
 
     if wishlist_item_exists:
@@ -38,34 +39,20 @@ def remove_from_wishlist(request, book_id):
     return JsonResponse({'success': success})
 
 
-
-# def remove_from_wishlist(request, book_id):
-#     wishlist = request.session.get('wishlist', [])
-    
-#     if book_id in wishlist:
-#         wishlist.remove(book_id)
-#         request.session['wishlist'] = wishlist
-#         success = True
-#     else:
-#         success = False
-
-#     return JsonResponse({'success': success})
-
-
 def wishlist_view(request):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
-    user = User.objects.get(username=user_id)
-    
-    wishlist_items = WishlistItem.objects.filter(user=user)
+    role_user = User.objects.get(username=user_id)
+
+    wishlist_items = WishlistItem.objects.filter(user=role_user)  
     wished_books = [item.wished_book for item in wishlist_items]
     return render(request, 'wishlist.html', {'wishlist': wished_books})
 
 
 def get_books_json(request):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
-    user = User.objects.get(username=user_id)
+    role_user = User.objects.get(username=user_id)
 
-    wishlist_items = WishlistItem.objects.filter(user=user)
+    wishlist_items = WishlistItem.objects.filter(user=role_user)
     wished_books = [item.wished_book for item in wishlist_items]
     books_data = [
         {
@@ -75,7 +62,8 @@ def get_books_json(request):
             'author': book.author,
             'average_rating': book.average_rating,
             'harga': book.harga,
+            'keterangan' : item.keterangan, # mengambil data keterangan dari models
         }
-        for book in wished_books
+        for book, item in zip(wished_books, wishlist_items)
     ]
     return JsonResponse(books_data, safe=False)

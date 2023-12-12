@@ -128,7 +128,30 @@
     </div>
 </div>
 
-<!-- Tombol "Add Product by AJAX" yang dipindahkan ke dalam modal -->
+<div class="modal fade" id="wishlistModal" tabindex="-1" aria-labelledby="wishlistModalLabel" aria-hidden="true">
+    <div class="modal-dialog">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="wishlistModalLabel">Add to Wishlist</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <form id="wishlistForm">
+                    {% csrf_token %}
+                    <div class="mb-3">
+                        <label for="keterangan" class="col-form-label">Keterangan:</label>
+                        <input type="text" class="form-control" id="keterangan" name="keterangan"></input>
+                    </div>
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button id="addToWishlistBtn" type="button" class="btn btn-primary" data-bs-dismiss="modal" data-book-id="{{ book.id }}">Add to Wishlist</button>
+            </div>
+        </div>
+    </div>
+</div>
+
 
 <section
  class="py-5">
@@ -142,10 +165,10 @@
                         Add to cart
                     </button> -->
                     <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal" data-book-id="{{ book.id }}">Add To Cart</button>
-                    <button id="addToWishlistBtn" class="btn btn-outline-dark flex-fill" type="button" data-book-id="{{ book.id }}">
+                    <button class="btn btn-outline-dark flex-fill" type="button" data-bs-toggle="modal" data-bs-target="#wishlistModal" data-book-id="{{ book.id }}">
                         <i class="bi-cart-fill me-1"></i>
                         Add to Wishlist
-                    </button>                                      
+                    </button>                                       
                 </div>
             </div>
             <div class="col-md-6 overflow-y-auto">
@@ -207,7 +230,12 @@
         const addToWishlistBtn = document.getElementById("addToWishlistBtn");
         addToWishlistBtn.addEventListener("click", function () {
             const bookId = addToWishlistBtn.getAttribute("data-book-id");
-            fetch(`/wishlist/add/${bookId}/`)
+            const keteranganInput = document.getElementById("keterangan");
+            const keterangan = keteranganInput.value;
+
+            fetch(`/wishlist/add/${bookId}/`, {
+                method: "POST",
+                body: new FormData(document.querySelector('#wishlistForm')),})
                 .then(response => response.json())
                 .then(data => {
                     if (data.success) {
