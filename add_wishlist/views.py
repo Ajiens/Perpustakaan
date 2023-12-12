@@ -13,6 +13,7 @@ def add_to_wishlist(request, book_id):
     keterangan = request.POST.get('keterangan')
     
     book = get_object_or_404(Book, pk=book_id)
+    keterangan = request.POST.get('keterangan')
 
     wishlist = WishlistItem(user=user, wished_book=book, keterangan=keterangan)
     wishlist_item_exists = WishlistItem.objects.filter(user=user, wished_book=book).exists()

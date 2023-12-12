@@ -226,13 +226,14 @@
         document.getElementById("form").reset()
     }
 
+    
     document.addEventListener("DOMContentLoaded", function () {
-        const addToWishlistBtn = document.getElementById("addToWishlistBtn");
-        addToWishlistBtn.addEventListener("click", function () {
-            const bookId = addToWishlistBtn.getAttribute("data-book-id");
-            const keteranganInput = document.getElementById("keterangan");
-            const keterangan = keteranganInput.value;
-
+    const addToWishlistBtn = document.getElementById("addToWishlistBtn");
+    addToWishlistBtn.addEventListener("click", function () {
+        const bookId = addToWishlistBtn.getAttribute("data-book-id");
+        const keteranganInput = document.getElementById("keterangan");
+        const keterangan = keteranganInput.value;
+        
             fetch(`/wishlist/add/${bookId}/`, {
                 method: "POST",
                 body: new FormData(document.querySelector('#wishlistForm')),})
@@ -243,6 +244,7 @@
                     } else {
                         alert("Book is already in your Wishlist");
                     }
+                    document.getElementById("wishlistForm").reset();
                 })
                 .catch(error => {
                     console.error("Error:", error);
