@@ -3,14 +3,13 @@ from django.shortcuts import get_object_or_404, render
 from django.contrib import messages
 from django.urls import reverse
 from django.core import serializers
-from authentication.models import UserWithRole
+from django.contrib.auth.models import User
 from book.models import Book
 from add_wishlist.models import WishlistItem
 
 def add_to_wishlist(request, book_id):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
-    role_user = UserWithRole.objects.get(user=user_id)
-    user = role_user.user
+    user = User.objects.get(username=user_id)
     
     book = get_object_or_404(Book, pk=book_id)
 
@@ -28,8 +27,8 @@ def add_to_wishlist(request, book_id):
 
 def remove_from_wishlist(request, book_id):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
-    role_user = UserWithRole.objects.get(user=user_id)
-    user = role_user.user
+    user = User.objects.get(username=user_id)
+
     book = get_object_or_404(Book, pk=book_id)
 
     wishlist_item = WishlistItem.objects.get(user=user, wished_book=book)
@@ -55,9 +54,8 @@ def remove_from_wishlist(request, book_id):
 
 def wishlist_view(request):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
-    role_user = UserWithRole.objects.get(user=user_id)
-    user = role_user.user
-
+    user = User.objects.get(username=user_id)
+    
     wishlist_items = WishlistItem.objects.filter(user=user)
     wished_books = [item.wished_book for item in wishlist_items]
     return render(request, 'wishlist.html', {'wishlist': wished_books})
@@ -65,8 +63,7 @@ def wishlist_view(request):
 
 def get_books_json(request):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
-    role_user = UserWithRole.objects.get(user=user_id)
-    user = role_user.user
+    user = User.objects.get(username=user_id)
 
     wishlist_items = WishlistItem.objects.filter(user=user)
     wished_books = [item.wished_book for item in wishlist_items]

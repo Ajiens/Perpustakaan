@@ -21,7 +21,7 @@ def login(request):
                 "message": "Login sukses!"
                 # Tambahkan data lainnya jika ingin mengirim data ke Flutter.
             }, status=200)
-            response.set_cookie('user', user.id)
+            response.set_cookie('user', user)
             return response
         else:
             return JsonResponse({

@@ -54,17 +54,17 @@ def login_user(request):
         password = request.POST.get('password')
         user = authenticate(request, username=username, password=password)
         if user is not None:
-            print(user)
-            role_user = UserWithRole.objects.get(user=user)
+            print(user.username, user)
+            role_user = UserWithRole.objects.get(name=user.username)
             if (role_user.role == "Karyawan"):
                 print("Karyawan")
                 response = HttpResponseRedirect(reverse("katalog_buku:show_main_karyawan"))
-                response.set_cookie('user', user.id)
+                response.set_cookie('user', user)
                 return response
             else:
                 print("Pelanggan")
                 response = HttpResponseRedirect(reverse("katalog_buku:show_main"))
-                response.set_cookie('user', user.id)
+                response.set_cookie('user', user)
                 return response
         else:
             messages.info(request, 'Sorry, incorrect username or password. Please try again.')

@@ -8,6 +8,7 @@ from django.views.decorators.csrf import csrf_exempt
 from django.shortcuts import redirect
 from django.http import JsonResponse
 
+from django.contrib.auth.models import User
 from book.models import Book
 from deskripsi_buku.models import Review
 
@@ -49,10 +50,13 @@ def add_review_flutter(request):
         rating = data.get('rating')
         komentar = data.get('komentar')
 
-        
+        user = request.COOKIES.get('user') #Ambil Cookie id
+        if (user == None):
+            user = request.user
+
         if (int(rating) > 5):
             return JsonResponse({"status": "error"}, status=401)
-        user = request.user
+        
         buku_id = int(data.get("buku_id"))
 
         try:
@@ -78,10 +82,10 @@ def add_review_flutter(request):
         book.rating_count += 1
         book.save()
 
-        new_review = Review(book=book, user=user, rating_user=rating, komentar=komentar)
+        new_review = Review(book=book, user=request.user, rating_user=rating, komentar=komentar)
         new_review.save()
-
-        return JsonResponse({"status": "succes"}, status=200)
+    
+        return JsonResponse({"status": "success"}, status=200)
 
     return JsonResponse({"status": "error"}, status=401)
 
@@ -92,7 +96,10 @@ def add_review_buku(request):
         rating = request.POST.get("rating")
         if (int(rating) > 5):
             messages.error(request, 'Rating tidak boleh lebih dari 5.')
-        user = request.user
+        
+        user_id = request.COOKIES.get('user') #Ambil Cookie id
+        user = User.objects.get(username=user_id)
+
         buku_id = int(request.POST.get("buku_id"))
 
         try:
