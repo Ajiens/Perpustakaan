@@ -1,4 +1,5 @@
 import datetime
+import json
 from django.shortcuts import get_object_or_404, render
 from django.urls import reverse
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
@@ -94,3 +95,55 @@ def pinjam_buku_ajax(request,id):
         else :
             return HttpResponseNotFound()
     return HttpResponseNotFound()
+
+@csrf_exempt
+def pinjam_buku_flutter(request,id):
+    print("halo")
+  
+    if request.method == 'POST':
+        print ("apakabar")
+        data = json.loads(request.body)
+        print("baik")
+        user = request.COOKIES.get('user') 
+        print(user)
+        if (user == None):
+            user = request.user
+
+        print(user)
+        print("ininih")
+        lama_peminjaman = data['lama_peminjaman']
+        book = get_object_or_404(Book, pk=id)
+        if book.is_available:
+            book_borrow_exists = Borrow.objects.filter(user=user, book=book).exists()
+            if not book_borrow_exists:
+                book_borrow = Borrow(user=user, book=book,lama_peminjaman = lama_peminjaman, is_dikembalikan=False)
+                book_borrow.save()
+                book.is_available = False
+                book.save()
+            return JsonResponse({"status": "success"}, status=200)
+        else:
+         return JsonResponse({"status": "error"}, status=401) 
+    else:
+        return JsonResponse({"status": "error"}, status=401)
+    
+def get_books_flutter(request):
+    user_id = request.COOKIES.get('user') #Ambil Cookie id
+    # role_user = User.objects.get(username=user_id)
+    if (user_id == None):
+            user = request.user
+
+    borrow_items = Borrow.objects.filter(user=user)
+    borrowed_books = [item.book for item in borrow_items]
+    context = [
+        {
+            'pk': book.pk,
+            'title': book.title,
+            'cover_link': book.cover_link,
+            'author': book.author,
+            'average_rating': book.average_rating,
+            'lama_peminjaman': item.lama_peminjaman,
+            'last_login' : request.COOKIES["last_login"][:-10] if "last_login" in request.COOKIES else "",
+        }
+        for book, item in zip(borrowed_books, borrow_items)
+    ]
+    return JsonResponse(context, safe=False)
