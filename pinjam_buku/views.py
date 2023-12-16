@@ -23,7 +23,6 @@ def get_books_json(request):
     print()
     if request.user.is_authenticated:
         user = request.user
-        print("kesini")
     else:
         user_id = request.COOKIES.get('user') #Ambil Cookie id
         user = User.objects.get(username=user_id)

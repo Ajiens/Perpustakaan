@@ -28,9 +28,13 @@ def add_to_wishlist(request, book_id):
     return JsonResponse({'success': success})
 
 
+@csrf_exempt
 def remove_from_wishlist(request, book_id):
-    user_id = request.COOKIES.get('user') #Ambil Cookie id
-    user = User.objects.get(username=user_id)
+    if request.user.is_authenticated: 
+        user = request.user
+    else:
+        user_id = request.COOKIES.get('user')
+        user = User.objects.get(username=user_id)
 
     book = get_object_or_404(Book, pk=book_id)
 
@@ -53,9 +57,7 @@ def wishlist_view(request):
 def get_books_json(request):
     if request.user.is_authenticated: 
         user = request.user
-        print(user)
     else:
-        print("kesini")
         user_id = request.COOKIES.get('user')
         user = User.objects.get(username=user_id)
 
@@ -96,10 +98,8 @@ def add_to_wishlist_flutter(request, book_id):
 
         print("letsgo")
         if wishlist_item_exists:
-            print("udah ada")
             return JsonResponse({"status": "error"}, status=401)
         else:
-            print("berhasil")
             wishlist = WishlistItem(user=user, wished_book=book, keterangan=keterangan)
             wishlist.save()
             return JsonResponse({"status": "success"}, status=200)
