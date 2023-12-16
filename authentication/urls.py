@@ -7,4 +7,5 @@ urlpatterns = [
     path('login/', login, name='login'),
     path('register/', register, name='register'),
     path('logout/', logout, name='logout'),
+    path('json/', get_item_json, name='get_item_json'),
 ]

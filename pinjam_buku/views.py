@@ -10,6 +10,7 @@ from book.models import Book
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.models import User
 
+
 def show_borrow(request):
     user_id = request.COOKIES.get('user') #Ambil Cookie id
     role_user = User.objects.get(username=user_id)
@@ -19,10 +20,17 @@ def show_borrow(request):
     return render(request, 'peminjaman.html', {'borrowed_books': all_borrowed_books})
 
 def get_books_json(request):
-    user_id = request.COOKIES.get('user') #Ambil Cookie id
-    role_user = User.objects.get(username=user_id)
+    if request.user.is_authenticated:
+        user = request.user
+        print(user)
+    else:
+        print("kesini")
+        user_id = request.COOKIES.get('user') #Ambil Cookie id
+        print(user_id)
+        user = User.objects.get(username = user_id)
+        print(user)
 
-    borrow_items = Borrow.objects.filter(user=role_user)
+    borrow_items = Borrow.objects.filter(user=user)
     borrowed_books = [item.book for item in borrow_items]
     context = [
         {
@@ -96,6 +104,7 @@ def pinjam_buku_ajax(request,id):
             return HttpResponseNotFound()
     return HttpResponseNotFound()
 
+
 @csrf_exempt
 def pinjam_buku_flutter(request,id):
     print("halo")
@@ -125,25 +134,28 @@ def pinjam_buku_flutter(request,id):
          return JsonResponse({"status": "error"}, status=401) 
     else:
         return JsonResponse({"status": "error"}, status=401)
+# @csrf_exempt
+# def show_borrow_flutter(request):
+#     print("bismillah jalan")
+#     if request.
+#     user = request.COOKIES.get('user') #Ambil Cookie id
+#     print("jalan ga")
     
-def get_books_flutter(request):
-    user_id = request.COOKIES.get('user') #Ambil Cookie id
-    # role_user = User.objects.get(username=user_id)
-    if (user_id == None):
-            user = request.user
-
-    borrow_items = Borrow.objects.filter(user=user)
-    borrowed_books = [item.book for item in borrow_items]
-    context = [
-        {
-            'pk': book.pk,
-            'title': book.title,
-            'cover_link': book.cover_link,
-            'author': book.author,
-            'average_rating': book.average_rating,
-            'lama_peminjaman': item.lama_peminjaman,
-            'last_login' : request.COOKIES["last_login"][:-10] if "last_login" in request.COOKIES else "",
-        }
-        for book, item in zip(borrowed_books, borrow_items)
-    ]
-    return JsonResponse(context, safe=False)
+#     print("kesini")
+#     borrow_items = Borrow.objects.filter(user=user)
+#     print("halo")
+#     borrowed_books = [item.book for item in borrow_items]
+#     print(borrowed_books)
+#     context = [
+#         {
+#             'pk': book.pk,
+#             'title': book.title,
+#             'cover_link': book.cover_link,
+#             'author': book.author,
+#             'average_rating': book.average_rating,
+#             'lama_peminjaman': item.lama_peminjaman,
+#         }
+#         for book, item in zip(borrowed_books, borrow_items)
+#     ]
+#     return JsonResponse(context, safe=False)
+    

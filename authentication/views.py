@@ -1,10 +1,14 @@
 # Create your views here.
 from django.shortcuts import render
 from django.contrib.auth import authenticate, login as auth_login, logout as auth_logout
-from django.http import JsonResponse
+from django.http import HttpResponse, JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 import json
 from django.contrib.auth.models import User
+from django.core import serializers
+from pinjam_buku.models import Borrow
+
+user = None
 
 @csrf_exempt
 def login(request):
@@ -21,7 +25,12 @@ def login(request):
                 "message": "Login sukses!"
                 # Tambahkan data lainnya jika ingin mengirim data ke Flutter.
             }, status=200)
-            response.set_cookie('user', user)
+            response.set_cookie('user', user.get_username)
+            
+            print(user)
+            print("nyobain")
+            print(response.cookies)
+            print("ini")
             return response
         else:
             return JsonResponse({
@@ -83,3 +92,7 @@ def register(request):
             "status": False,
             "message": "Registration Failed. Check your password."
         }, status=401)
+    
+def get_item_json(request):
+    item = Borrow.objects.filter(user = user)
+    return HttpResponse(serializers.serialize('json', item))
