@@ -35,6 +35,7 @@ def login(request):
             "message": "Login gagal, periksa kembali email atau kata sandi."
         }, status=401)
 
+
 @csrf_exempt
 def logout(request):
     username = request.user.username
