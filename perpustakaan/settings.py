@@ -50,6 +50,7 @@ INSTALLED_APPS = [
     'add_member',
     'corsheaders',
     'authentication',
+    'flutter_authentication',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
