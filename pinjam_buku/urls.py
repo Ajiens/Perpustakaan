@@ -11,4 +11,6 @@ urlpatterns =[
     path("kembalikan/<int:id>/", kembalikan_buku, name="kembalikan_buku"),
     path('pinjam_buku_ajax/<int:id>/', pinjam_buku_ajax, name='pinjam_buku_ajax'),
     path('pinjam_buku_flutter/<int:id>/', pinjam_buku_flutter, name='pinjam_buku_flutter'),
+    path("kembalikan_flutter/<int:id>/<str:username>", kembalikan_buku_flutter, name="kembalikan_buku_flutter"),
+
 ]

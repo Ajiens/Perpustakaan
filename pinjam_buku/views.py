@@ -130,3 +130,18 @@ def pinjam_buku_flutter(request,id):
          return JsonResponse({"status": "error"}, status=401) 
     else:
         return JsonResponse({"status": "error"}, status=401)
+
+@csrf_exempt
+def kembalikan_buku_flutter(request, id,username):
+    print("halo")
+    if request.method == "POST":
+        user = get_object_or_404(User, username=username)
+        book = get_object_or_404(Book, pk=id)
+        borrowed_item = Borrow.objects.get(user=user, book=book, is_dikembalikan=False)
+        borrowed_item.is_dikembalikan = True
+        borrowed_item.delete()
+        book.is_available = True
+        book.save()
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)
