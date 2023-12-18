@@ -49,10 +49,13 @@ def add_review_flutter(request):
         # Dapatkan nilai rating dan komentar dari data JSON
         rating = data.get('rating')
         komentar = data.get('komentar')
+        username = data.get('username')
 
-        user = request.COOKIES.get('user') #Ambil Cookie id
-        if (user == None):
-            user = request.user
+        user = User.objects.get(username=username)
+        print(user)
+        # user = request.COOKIES.get('user') #Ambil Cookie id
+        # if (user == None):
+        #     user = request.user
 
         if (int(rating) > 5):
             return JsonResponse({"status": "error"}, status=401)
@@ -82,14 +85,15 @@ def add_review_flutter(request):
         book.rating_count += 1
         book.save()
 
-        new_review = Review(book=book, user=request.user, rating_user=rating, komentar=komentar)
+        new_review = Review(book=book, user=user, rating_user=rating, komentar=komentar)
         new_review.save()
+        print(new_review)
     
         return JsonResponse({"status": "success"}, status=200)
 
     return JsonResponse({"status": "error"}, status=401)
 
-@login_required(login_url='/login')
+@csrf_exempt
 def add_review_buku(request):
     if request.method == 'POST':
         komentar = request.POST.get("komentar")
@@ -99,7 +103,7 @@ def add_review_buku(request):
         
         user_id = request.COOKIES.get('user') #Ambil Cookie id
         user = User.objects.get(username=user_id)
-
+        print(user)
         buku_id = int(request.POST.get("buku_id"))
 
         try:
@@ -128,8 +132,10 @@ def add_review_buku(request):
         book.rating_count += 1
         book.save()
 
-        new_review = Review(book=book, user=user, rating_user=rating, komentar=komentar)
-        new_review.save()
+        new_review = Review.objects.create(book=book, user=user, rating_user=rating, komentar=komentar)
+        # new_review = Review(book=book, user=user, rating_user=rating, komentar=komentar)
+        # print(new_review)
+        # new_review.save()
 
         return HttpResponse('Review berhasil ditambahkan', status=201)
     else:

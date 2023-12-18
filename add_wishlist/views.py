@@ -85,10 +85,9 @@ def add_to_wishlist_flutter(request, book_id):
         
         data = json.loads(request.body)
         
-        user = request.COOKIES.get('user') 
-        print(user)
-        if (user == None):
-            user = request.user
+        username = data.get('username')
+
+        user = User.objects.get(username=username)
 
         book = get_object_or_404(Book, pk=book_id)
         keterangan = data['keterangan']

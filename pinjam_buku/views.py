@@ -109,13 +109,10 @@ def pinjam_buku_flutter(request,id):
     if request.method == 'POST':
         print ("apakabar")
         data = json.loads(request.body)
-        print("baik")
-        user = request.COOKIES.get('user') 
-        print(user)
-        if (user == None):
-            user = request.user
-        print(user)
-        print("ininih")
+
+        username = data.get('username')
+        user = User.objects.get(username=username)
+
         lama_peminjaman = data['lama_peminjaman']
         book = get_object_or_404(Book, pk=id)
         if book.is_available:
