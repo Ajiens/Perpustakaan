@@ -50,7 +50,6 @@ INSTALLED_APPS = [
     'add_member',
     'authentication',
     'corsheaders',
-    'authentication',
     'flutter_authentication',
 ]
 

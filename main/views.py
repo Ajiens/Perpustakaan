@@ -24,11 +24,11 @@ def show_main(request):
 def show_pelanggan_page(request):
     return render(request,"main.html")
 
-def register(request): #fix bagian ini
-    form = CustomUserCreationForm()
+def register(request):
+    form = UserCreationForm()
 
     if request.method == "POST":
-        form = CustomUserCreationForm(request.POST)
+        form = UserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             profile = UserWithRole(user=user, name=user.username, role="Pelanggan")

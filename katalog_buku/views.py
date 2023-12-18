@@ -8,6 +8,9 @@ from django.core import serializers
 from django.views.decorators.csrf import csrf_exempt
 from django.contrib.auth.decorators import login_required
 from authentication.models import UserWithRole
+from django.contrib.auth.models import User
+import json
+from django.http import JsonResponse
 
 
 # Create your views here.
@@ -74,12 +77,14 @@ def get_book_json(request):
     book_item = Book.objects.all()
     return HttpResponse(serializers.serialize('json', book_item))
 
-@login_required(login_url='/login')
 @csrf_exempt
 def add_book_ajax(request):
     if request.method == 'POST':
         user_id = request.COOKIES.get('user') #Ambil Cookie id
-        role_user = UserWithRole.objects.get(user=user_id)
+        
+        user = User.objects.get(username=user_id)
+        
+        role_user = UserWithRole.objects.get(user=user.id)
 
         if (role_user.role != "Pelanggan"):
             title = request.POST.get("title")
@@ -94,3 +99,37 @@ def add_book_ajax(request):
             return HttpResponse(b"CREATED", status=201)
         else:
             return HttpResponse(b"Access denied", status=401)
+
+
+
+@csrf_exempt
+def add_book_flutter(request):
+    if request.method == 'POST':
+        
+        data = json.loads(request.body)
+
+        new_product = Book.objects.create( 
+            #user = request.user,
+            title = data["title"],
+            cover_link = data["cover link"],
+            author = data["author"],
+            harga = int(data["price"]),
+            rating_count = 0,
+            review_count = 0,
+            average_rating=0, 
+            five_star_ratings=0, 
+            four_star_ratings=0, 
+            three_star_ratings=0,
+            two_star_ratings=0,
+            one_star_ratings=0, 
+            number_of_pages=0, 
+            date_published="",
+            publisher="",
+            isbn=0,
+            description="",
+            is_available = True,
+        )
+    
+        return JsonResponse({"status": "success"}, status=200)
+    else:
+        return JsonResponse({"status": "error"}, status=401)

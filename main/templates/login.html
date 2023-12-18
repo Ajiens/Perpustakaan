@@ -6,46 +6,10 @@
 
 {% block content %}
 
-<style>
-    .image{
-        background: linear-gradient(rgba(0, 0, 0, 0.65), rgba(0, 0, 0, 0.85)) , url(https://i.pinimg.com/564x/41/0d/91/410d91f26f71423949dd6c3d0ef39462.jpg);
-        background-position: center;
-        background-repeat: no-repeat;
-        background-attachment: fixed;
-        background-size: cover;
-        height: 70vh;
-    }
-    .card-header {
-        background-color: #ff69b4; /* Warna pink untuk header card */
-        color: #fff;
-        text-align: center; /* Pusatkan teks */
-    }
-
-    .card-body {
-        background-color: #ffe6f2; /* Warna pink muda untuk body card */
-    }
-
-    .btn-primary {
-        background-color: #ff69b4; /* Warna pink untuk tombol */
-        color: #fff;
-        width: 100%;
-    }
-
-    a {
-        color: #ff69b4; /* Warna pink untuk tautan */
-    }
-
-    /* Tambahkan aturan gaya untuk teks header */
-    .card-header h5 {
-        font-size: 24px; /* Ukuran font lebih besar */
-        margin-bottom: 0; /* Hapus margin bawah */
-    }
-</style>
-
 <div class="container min-vh-100 d-flex justify-content-center align-items-center" style="height: 70%; width: 70%;">
     <div class="card">
-        <div class="card-header d-flex justify-content-center align-items-center mt-2 mb-2">
-            <h5>Hi, Welcome!</h5>
+        <div class="card-header d-flex justify-content-start align-items-center mt-2 mb-2 bg-white">
+            <h5>Carousell PBP</h5>
         </div>
         <div class="card-body">
             <form form method="POST" action="">
@@ -68,7 +32,7 @@
                     </div>
                     
                 </div>
-                <button type="submit" class="btn btn-primary mt-3">Login</button>
+                <button type="submit" class="btn btn-primary mt-3" style="width: 100%;">Login</button>
             </form>
             <div class="mt-3">          
                 Don't have an account yet? <a href="{% url 'main:register' %}">Register Now</a>
