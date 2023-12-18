@@ -28,4 +28,5 @@ urlpatterns = [
     path("wishlist/", include("add_wishlist.urls")),
     path("add_member/",include("add_member.urls")),
     path('pinjam_buku/',include("pinjam_buku.urls")),
+    path('auth_flutter/', include('flutter_authentication.urls')),
 ]

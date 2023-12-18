@@ -1,23 +1,15 @@
 import datetime
-from django.http import HttpResponseRedirect
+from authentication.forms import CustomUserCreationForm
+from authentication.models import UserWithRole
 from django.urls import reverse
-from django.contrib.auth.decorators import login_required
-from django.contrib.auth import logout
-from django.contrib.auth import authenticate, login
 from django.shortcuts import redirect
-from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages  
+from django.contrib.auth.models import User
 from django.shortcuts import render
-from django.http import HttpResponseRedirect, HttpResponseNotFound
-from django.urls import reverse
-from django.http import HttpResponse
-from django.core import serializers
-from django.shortcuts import redirect
 from django.contrib.auth.forms import UserCreationForm
 from django.contrib import messages  
 from django.contrib.auth import authenticate, login, logout
 from django.contrib.auth.decorators import login_required
-
 from django.http import HttpResponse, HttpResponseRedirect, HttpResponseNotFound, JsonResponse
 from django.core import serializers
 from book.models import Book
@@ -32,11 +24,11 @@ def show_main(request):
 def show_pelanggan_page(request):
     return render(request,"main.html")
 
-def register(request):
-    form = UserCreationForm()
+def register(request): #fix bagian ini
+    form = CustomUserCreationForm()
 
     if request.method == "POST":
-        form = UserCreationForm(request.POST)
+        form = CustomUserCreationForm(request.POST)
         if form.is_valid():
             user = form.save()
             profile = UserWithRole(user=user, name=user.username, role="Pelanggan")

@@ -1,18 +1,20 @@
 from django.db import models
+from django.contrib.auth.models import User
 
-class Member(models.Model):
-    username = models.CharField(max_length=255)
-    email = models.EmailField(unique=True)
-    role_choices = [
-        ('customer', 'Pelanggan'),
-        ('employee', 'Karyawan'),
-    ]
-    role = models.CharField(max_length=10, choices=role_choices)
-    status_choices = [
-        ('member', 'Member'),
-        ('non_member', 'Non-Member'),
-    ]
-    status = models.CharField(max_length=10, choices=status_choices)
+from katalog_buku.models import Book
 
-    def __str__(self):
-        return self.username
+class UserProfile(models.Model):
+    name = models.CharField(max_length=255)
+    role = models.CharField(max_length=100)
+    tanggal_lahir = models.CharField(null=True, blank=True, max_length=100)
+    description = models.TextField(null=True, blank=True)
+
+    
+class Favorit(models.Model) :
+    title = models.TextField(null=True, blank=True)
+    id = models.IntegerField(primary_key=True, blank=True)
+    author = models.TextField(null=True, blank=True)
+    number_of_pages = models.IntegerField(null=True, blank=True)
+    date_published = models.TextField(null=True, blank=True)
+    publisher = models.TextField(null=True, blank=True)
+    user = models.ForeignKey(User, on_delete=models.CASCADE)

@@ -50,6 +50,8 @@ INSTALLED_APPS = [
     'add_member',
     'authentication',
     'corsheaders',
+    'authentication',
+    'flutter_authentication',
 ]
 
 CORS_ALLOW_ALL_ORIGINS = True
@@ -150,3 +152,5 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 # https://docs.djangoproject.com/en/4.2/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+APPEND_SLASH=False

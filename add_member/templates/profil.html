@@ -1,0 +1,266 @@
+{% extends 'base.html' %}
+{% block meta%}
+<title>Profil</title>
+    <style>
+        .profile-container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #f7f7f7;
+            border-radius: 10px;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        .profile-header {
+            text-align: center;
+        }
+        .profile-image {
+            max-width: 200px;
+            border-radius: 50%;
+            display: block;
+            margin: 20px auto;
+        }
+        .profile-box {
+            background-color: #fff;
+            border: 1px solid #ccc;
+            margin: 10px 0;
+            padding: 10px;
+            border-radius: 5px;
+        }
+        .profile-box h2 {
+            font-size: 18px;
+        }
+        .edit-link {
+            text-align: center;
+        }
+        
+    </style>
+{%endblock meta%}
+
+{% block content %}
+<nav class="navbar navbar-expanded-lg bg-dark">
+    <div class="container-fluid">
+        <a class="navbar-brand text-white font-monospace" href="#">Profil</a>
+        <a href="{% url 'main:show_main'%}" style="text-decoration: none;" class="mx-2">
+            <button type="button" class="btn btn-primary">Back</button>
+        </a>
+    </div>
+    
+</nav>
+
+    <div class="profile-container">
+        <div class="profile-header">
+            <h1>Profil Pengguna</h1>
+
+        </div>
+
+        <div class="profile-box">
+            <h2>Username</h2>
+            <p>{{ name }}</p>
+        </div>
+
+        <div class="profile-box">
+            <h2>Role</h2>
+            <p>{{role}}</p>
+        </div>
+        
+        <div id="profile_user"></div>
+
+        <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Profil</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <form id="form" onsubmit="return false;">
+                            {% csrf_token %}
+                            <div class="mb-3">
+                                <label for="tanggal_lahir" class="col-form-label">Tanggal Lahir:</label>
+                                <input type="text" class="form-control" id="tanggal_lahir" name="tanggal_lahir"></input>
+                            </div>
+                            <div class="mb-3">
+                                <label for="description" class="col-form-label">Description:</label>
+                                <textarea class="form-control" id="description" name="description"></textarea>
+                            </div>
+                        </form>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="button" class="btn btn-primary" id="button_add" data-bs-dismiss="modal">Edit Profil</button>
+                    </div>
+                </div>
+            </div>
+          </div>
+          
+          <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#exampleModal">Edit Profil</button>
+        
+    </div>
+
+ 
+<div class="justify-content-center">
+    <h1 class="text-center">My Favorites</h1>
+</div>
+<div id="list_buku_favorit"></div> 
+
+<br>
+<br>
+
+<div class="justify-content-center">
+    <h1 class="text-center">List of Books</h1>
+</div>
+<div class="row row-cols-1 row-cols-md-3 g-4 py-3 justify-content-center">
+    {% for book in books %}
+    <div class="col mx-5">
+        <div class="card">
+            <div class="card-header text-center fw-semibold bg-success text-white">
+                Book {{ book.pk }}
+            </div>
+            <div class="card-body text-center">
+                <strong>Judul</strong>: {{ book.title }} <br>
+                <strong>Penulis</strong>: {{ book.author }} <br>
+                <strong>Jumlah Halaman</strong>: {{ book.number_of_pages }} <br>
+                <strong>Tanggal Publikasi</strong>: {{ book.date_published }} <br>
+                <strong>Penerbit</strong>: {{ book.publisher }} <br>
+            </div>
+            <a>
+                <button class="form-control btn btn-primary fw-bold" onclick="add_favorit('${{ book.pk }}')">
+                    Tambah ke My Favorites
+                </button>
+            </a>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+
+    <script>
+        async function getProfil() {
+            return fetch("{% url 'profilUser:get_profilUser_json' %}").then((res) => res.json())
+        }
+
+        async function getFavorites() {
+            return fetch(`get_favorites/`).then((res) => res.json())
+        }
+
+        async function getUserProfileByName() {
+            return fetch(`get_user_profile_by_name/`).then((res) => res.json())
+        }
+        
+        async function refreshProfil() {
+            document.getElementById("profile_user").innerHTML=``;
+
+            user = await getUserProfileByName()
+            console.log("USER: ",user, "A")
+            user = user[0]
+
+            let htmlString =``
+            htmlString += `
+
+            <div class="profile-box">
+                <h2>Tanggal Lahir</h2>
+                <p id="profil_ttl">${user.fields.tanggal_lahir}</p>
+            </div>
+
+            <div class="profile-box">
+                <h2>Deskripsi</h2>
+                <p id="profil_description">${user.fields.description}</p>
+            </div>
+            `
+            document.getElementById("profile_user").innerHTML = htmlString;
+        }
+        refreshProfil()
+        
+      
+      async function refreshFavorit() {
+        document.getElementById('list_buku_favorit').innerHTML = ``
+    
+    
+        let filteredBooks = await getFavorites()
+    
+    
+        let htmlString = ``
+        htmlString += `\n
+        <div class="row row-cols-1 row-cols-md-3 g-4 py-3 justify-content-center">
+        `
+        console.log(filteredBooks)
+        filteredBooks.forEach((book) => {
+            htmlString += `\n
+            <div class="col mx-5">
+                <div class="card">
+                    <div class="card-header text-center fw-semibold bg-success text-white">
+                        Buku ${book.fields.id_book}
+                    </div>
+                    <div class="card-body text-center">
+                        <strong>Judul</strong>: ${book.fields.title} <br>
+                        <strong>Penulis</strong>: ${book.fields.author} <br>
+                        <strong>Jumlah Halaman</strong>: ${book.fields.number_of_pages} <br>
+                        <strong>Tanggal Publikasi</strong>: ${book.fields.date_published} <br>
+                        <strong>Penerbit</strong>: ${book.fields.publisher} <br>
+                    </div>
+                    <a>
+                        <button class="form-control btn btn-primary fw-bold" onclick=deleteFavorit(${book.pk})>
+                            Delete
+                        </button>
+                    </a>
+                    
+                </div>
+            </div>
+            `
+        })
+        
+        htmlString += `\n
+        </div>
+        `
+        document.getElementById('list_buku_favorit').innerHTML = htmlString
+          
+      }
+      
+      
+      function edit_profil_ajax() {
+            fetch(`edit_profil_ajax/`, {
+                method: "POST",
+                body: new FormData(document.querySelector('#form'))
+            })
+            .then(function(response) {
+                document.getElementById("form").reset()
+                if (response.status === 404) {
+                    // Handle HTTP 404 (Not Found) response here
+                    alert("Date should be in format DD/MM/YYYY")
+                } else {
+                    // Handle a successful response here
+                    refreshProfil()
+                } 
+            })
+            .catch(function(error) {
+                // Handle network or fetch error here
+                console.error("Fetch error:", error);
+            });
+      }
+      document.getElementById("button_add").onclick = edit_profil_ajax
+
+
+      console.log("test1")
+      function add_favorit(id) {
+        console.log("test2")
+
+        fetch(`add_favorit/${id}/`, {
+            method: "POST",
+           
+        }).then(refreshFavorit)
+      
+        return false
+      }
+
+      async function deleteFavorit(id) {
+        fetch(`delete_favorit/${id}/`, {
+            method: "DELETE",
+        }).then(refreshFavorit)
+        return false
+    }
+      refreshFavorit()
+      </script>
+      
+    
+
+
+{% endblock content %}

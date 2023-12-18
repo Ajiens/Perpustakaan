@@ -1,6 +1,6 @@
 from django.apps import AppConfig
 
 
-class AuthenticationConfig(AppConfig):
+class FlutterAuthenticationConfig(AppConfig):
     default_auto_field = "django.db.models.BigAutoField"
-    name = "authentication"
+    name = "flutter_authentication"
