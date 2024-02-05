@@ -7,6 +7,10 @@ from pinjam_buku.models import Borrow
 from book.models import Book
 from django.views.decorators.csrf import csrf_exempt
 
+def show_json(request):
+    data = Borrow.objects.all()
+    return HttpResponse(serializers.serialize("json", data), content_type="application/json")
+
 def show_borrow(request):
     borrowed_books = Borrow.objects.filter(user=request.user)
     all_borrowed_books = [item.book for item in borrowed_books]
